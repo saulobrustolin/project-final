@@ -25,6 +25,7 @@ public class User implements UserDetails {
     private final String name;
     private final String email;
     private final String cpf;
+    private Integer balance = 0;
     private final String password;
     private UserRole role = UserRole.USER;
     private Boolean isActive = true;

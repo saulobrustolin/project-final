@@ -1,4 +1,4 @@
-package saulo.brustolin.project.dtos.transaction;
+package saulo.brustolin.project.dtos.transactions;
 
 import java.time.Instant;
 

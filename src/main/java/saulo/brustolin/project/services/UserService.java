@@ -1,10 +1,17 @@
 package saulo.brustolin.project.services;
 
+import java.time.YearMonth;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
+import saulo.brustolin.project.dtos.users.ResumeUserDTO;
+import saulo.brustolin.project.entities.TransactionType;
+import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.repositories.UserRepository;
 
@@ -13,9 +20,30 @@ import saulo.brustolin.project.repositories.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TransactionService transactionService;
 
     public UserDetails loadUserByEmail(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    }
+
+    public ResumeUserDTO getResume(User user, YearMonth period) {
+        List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, period);
+
+        Integer net_balance = transactions.stream()
+            .mapToInt(t -> t.type() == TransactionType.INCOME ? t.amount() : -t.amount())
+            .sum();
+
+        return new ResumeUserDTO(
+            user.getBalance(),
+            net_balance,
+            transactions
+        );
+    }
+
+    public void updateBalance(User user, Integer amount) {
+        user.setBalance(user.getBalance() + amount);
+        
+        userRepository.save(user);
     }
 }
