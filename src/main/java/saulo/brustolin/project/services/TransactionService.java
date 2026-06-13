@@ -1,5 +1,11 @@
 package saulo.brustolin.project.services;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +24,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
 
     public void createTransaction(User user, CreateTransactionDTO dto) {
-        Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(), dto.collection());
+        Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(), dto.collection(), dto.date());
 
         transactionRepository.save(transaction);
     }
@@ -34,5 +40,16 @@ public class TransactionService {
             transaction.getType(),
             transaction.getCollection()
         );
+    }
+
+    public List<TransactionResponseDTO> getPeriod(User user, YearMonth period) {
+        YearMonth target = period != null ? period : YearMonth.now();
+
+        Instant start = target.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant end = target.atEndOfMonth().atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant();
+
+        List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateBetween(user.getId(), start, end);
+
+        return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
     }
 }

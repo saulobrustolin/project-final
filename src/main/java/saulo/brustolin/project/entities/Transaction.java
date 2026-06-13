@@ -22,6 +22,7 @@ public class Transaction {
     private final String userId;
     private final TransactionType type;
     private final CollectionType collection;
+    private final Instant date;
 
     @CreatedDate
     private Instant createdAt;
