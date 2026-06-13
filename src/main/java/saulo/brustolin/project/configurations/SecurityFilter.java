@@ -2,6 +2,7 @@ package saulo.brustolin.project.configurations;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,15 +14,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.exceptions.ErrorException;
+import saulo.brustolin.project.repositories.UserRepository;
 import saulo.brustolin.project.services.TokenService;
-import saulo.brustolin.project.services.UserService;
 
 @Component
 @AllArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,7 +31,8 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             var login = tokenService.validateToken(token);
             if (!login.isEmpty()) {
-                UserDetails user = userService.loadUserByEmail(login);
+                UserDetails user = userRepository.findByEmail(login)
+                    .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
                 
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
