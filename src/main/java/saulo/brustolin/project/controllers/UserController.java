@@ -3,8 +3,11 @@ package saulo.brustolin.project.controllers;
 import java.time.YearMonth;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.users.MeDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
+import saulo.brustolin.project.dtos.users.UpdateUserDTO;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.services.UserService;
 
@@ -37,5 +41,12 @@ public class UserController {
             user.getEmail(),
             user.getBalance()
         );
+    }
+
+    @PatchMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Void> update(@AuthenticationPrincipal User user, @RequestBody UpdateUserDTO dto) {
+        userService.update(user, dto);
+
+        return ResponseEntity.ok().build();
     }
 }

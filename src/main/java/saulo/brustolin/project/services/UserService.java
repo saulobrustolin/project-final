@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
+import saulo.brustolin.project.dtos.users.UpdateUserDTO;
 import saulo.brustolin.project.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
+import saulo.brustolin.project.mappers.UserMapper;
 import saulo.brustolin.project.repositories.UserRepository;
 
 @Service
@@ -22,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final TransactionService transactionService;
+    private final UserMapper userMapper;
 
     public UserDetails loadUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -45,5 +48,10 @@ public class UserService {
     @Transactional
     public void updateBalance(User user, Integer amount) {
         user.setBalance(user.getBalance() + amount);
+    }
+
+    @Transactional
+    public void update(User user, UpdateUserDTO dto) {
+        userMapper.updateEntityFromDto(dto, user);
     }
 }
