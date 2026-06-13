@@ -41,11 +41,6 @@ public class UserService {
     }
 
     @Transactional
-    public void updateBalance(User user, Integer amount) {
-        user.setBalance(user.getBalance() + amount);
-    }
-
-    @Transactional
     public void update(User user, UpdateUserDTO dto) {
         userMapper.updateEntityFromDto(dto, user);
     }
