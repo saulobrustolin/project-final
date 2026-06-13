@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.dtos.users.MeDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.services.UserService;
@@ -27,5 +28,14 @@ public class UserController {
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth period
     ) {
         return userService.getResume(user, period);
+    }
+
+    @GetMapping(path = "/me", produces = "application/json")
+    public MeDTO getMe(@AuthenticationPrincipal User user) {
+        return new MeDTO(
+            user.getName(),
+            user.getEmail(),
+            user.getBalance()
+        );
     }
 }
