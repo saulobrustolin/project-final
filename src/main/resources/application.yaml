@@ -16,3 +16,4 @@ api:
   security:
     token:
       secret: ${JWT_SECRET}
+      expired: ${JWT_EXPIRED}

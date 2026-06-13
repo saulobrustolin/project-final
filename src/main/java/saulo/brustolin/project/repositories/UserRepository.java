@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import saulo.brustolin.project.entities.User;
 
 public interface UserRepository extends MongoRepository<User, String> {
-    Optional<UserDetails> findByEmail(String email);
+    Optional<UserDetails> findByEmailAndIsActiveTrue(String email);
+    UserDetails findByIdAndIsActiveTrue(String id);
     boolean existsByEmail(String email);
 }
