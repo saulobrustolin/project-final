@@ -66,6 +66,10 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
+        if (transaction.getUserId() != user.getId()) {
+            throw new ErrorException(HttpStatus.UNAUTHORIZED, "Essa transação é privada");
+        }
+
         transactionRepository.delete(transaction);
         user.setBalance(user.getBalance() - (transaction.getType() == TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount()));
     }

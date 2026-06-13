@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.dtos.budgets.BudgetResponseDTO;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
 import saulo.brustolin.project.dtos.users.UpdateUserDTO;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final TransactionService transactionService;
     private final UserMapper userMapper;
+    private final BudgetService budgetService;
 
     public ResumeUserDTO getResume(User user, YearMonth period) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, period);
@@ -28,10 +30,13 @@ public class UserService {
             .mapToInt(t -> t.type() == TransactionType.INCOME ? t.amount() : -t.amount())
             .sum();
 
+        List<BudgetResponseDTO> budgets = budgetService.getBudgets(user);
+
         return new ResumeUserDTO(
             user.getBalance(),
             net_balance,
-            transactions
+            transactions,
+            budgets
         );
     }
 
