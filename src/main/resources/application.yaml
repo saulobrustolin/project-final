@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: project
+
+server:
+  servlet:
+    context-path: /api/v1
+
+---
+spring:
+  mongodb:
+    uri: ${MONGO_URI}
+    database: ${MONGO_DB}
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
