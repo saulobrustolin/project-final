@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
@@ -41,9 +42,8 @@ public class UserService {
         );
     }
 
+    @Transactional
     public void updateBalance(User user, Integer amount) {
         user.setBalance(user.getBalance() + amount);
-        
-        userRepository.save(user);
     }
 }

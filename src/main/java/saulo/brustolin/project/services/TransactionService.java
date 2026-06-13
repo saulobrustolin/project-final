@@ -15,6 +15,7 @@ import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.transactions.UpdateTransactionDTO;
 import saulo.brustolin.project.entities.Transaction;
+import saulo.brustolin.project.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.mappers.TransactionMapper;
@@ -26,11 +27,17 @@ public class TransactionService {
     
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
+    private final UserService userService;
 
     public void createTransaction(User user, CreateTransactionDTO dto) {
         Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(), dto.collection(), dto.date());
 
         transactionRepository.save(transaction);
+
+        userService.updateBalance(
+            user,
+            transaction.getType() == TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount()
+        );
     }
 
     public TransactionResponseDTO getTransaction(User user, String transactionId) {
@@ -50,6 +57,11 @@ public class TransactionService {
     public void updateTransaction(User user, String transactionId, UpdateTransactionDTO dto) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+
+        if (dto.amount() != null) {
+            int balanceAdjustment = (dto.amount() - transaction.getAmount()) * (transaction.getType() == TransactionType.INCOME ? 1 : -1);
+            userService.updateBalance(user, balanceAdjustment);
+        }
 
         transactionMapper.updateEntityFromDto(dto, transaction);
     }
