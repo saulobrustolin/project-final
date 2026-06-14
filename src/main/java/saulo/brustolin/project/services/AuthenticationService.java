@@ -23,14 +23,14 @@ public class AuthenticationService {
     private final CookieUtil cookieUtil;
 
     public void authenticate(AuthenticationDTO dto, HttpServletResponse response) {
-        var userDetails = userRepository.findByEmailAndIsActiveTrue(dto.email())
+        var user = userRepository.findByEmailAndIsActiveTrue(dto.email())
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        if (!passwordEncoder.matches(dto.password(), userDetails.getPassword())) {
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
         }
 
-        String token = tokenService.generateToken(userDetails.getUsername());
+        String token = tokenService.generateToken(user.getEmail());
 
         cookieUtil.addingCookie(response, token);
     }

@@ -21,7 +21,7 @@ public class AuthenticationController {
 
     @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> login(
-        AuthenticationDTO dto,
+        @RequestBody AuthenticationDTO dto,
         HttpServletResponse response
     ) {
         authenticationService.authenticate(dto, response);
