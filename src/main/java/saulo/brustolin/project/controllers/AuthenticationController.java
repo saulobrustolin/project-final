@@ -2,6 +2,7 @@ package saulo.brustolin.project.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class AuthenticationController {
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> register(
-        RegisterDTO dto,
+        @RequestBody RegisterDTO dto,
         HttpServletResponse response
     ) {
         authenticationService.register(dto, response);

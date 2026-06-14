@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import saulo.brustolin.project.dtos.exceptions.ErrorDTO;
 import saulo.brustolin.project.dtos.exceptions.ValidationErrorDTO;
 
 @RestControllerAdvice
@@ -24,5 +25,10 @@ public class GlobalExceptionHandler {
                 .toList();
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(ErrorException.class)
+    public ResponseEntity<ErrorDTO> handleError(ErrorException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(new ErrorDTO(ex.getMessage()));
     }
 }

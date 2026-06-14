@@ -17,3 +17,9 @@ api:
     token:
       secret: ${JWT_SECRET}
       expired: ${JWT_EXPIRED}
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

@@ -1,7 +1,6 @@
 package saulo.brustolin.project.services;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +40,14 @@ public class AuthenticationService {
             throw new ErrorException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
 
+        if (!dto.password().equals(dto.confirmPassword())) {
+            throw new ErrorException(HttpStatus.BAD_REQUEST, "As senhas não são iguais");
+        }
+
         var user = new User(dto.name(), dto.email(), dto.cpf(), passwordEncoder.encode(dto.password()));
         userRepository.save(user);
 
-        UserDetails userDetails = userRepository.findByIdAndIsActiveTrue(user.getId());
-        String token = tokenService.generateToken(userDetails.getUsername());
+        String token = tokenService.generateToken(user.getEmail());
         cookieUtil.addingCookie(response, token);
     }
 }
