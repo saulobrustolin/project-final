@@ -18,7 +18,7 @@ public class AuthenticationController {
     
     private final AuthenticationService authenticationService;
 
-    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> login(
         AuthenticationDTO dto,
         HttpServletResponse response
@@ -28,7 +28,7 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> register(
         RegisterDTO dto,
         HttpServletResponse response
