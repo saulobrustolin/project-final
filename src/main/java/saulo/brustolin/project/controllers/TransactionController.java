@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
@@ -30,7 +31,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> createTransaction(@RequestBody CreateTransactionDTO dto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Void> createTransaction(@RequestBody @Valid CreateTransactionDTO dto, @AuthenticationPrincipal User user) {
         transactionService.createTransaction(user, dto);
         
         return ResponseEntity.ok().build();
@@ -57,7 +58,7 @@ public class TransactionController {
     public ResponseEntity<Void> updateTransaction(
         @AuthenticationPrincipal User user,
         @PathVariable String transactionId,
-        @RequestBody UpdateTransactionDTO dto
+        @RequestBody @Valid UpdateTransactionDTO dto
     ) {
         transactionService.updateTransaction(user, transactionId, dto);
         

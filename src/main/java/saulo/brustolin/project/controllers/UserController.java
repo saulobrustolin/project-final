@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.users.MeDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> update(@AuthenticationPrincipal User user, @RequestBody UpdateUserDTO dto) {
+    public ResponseEntity<Void> update(@AuthenticationPrincipal User user, @RequestBody @Valid UpdateUserDTO dto) {
         userService.update(user, dto);
 
         return ResponseEntity.ok().build();

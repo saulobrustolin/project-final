@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.auth.AuthenticationDTO;
 import saulo.brustolin.project.dtos.auth.RegisterDTO;
@@ -21,7 +22,7 @@ public class AuthenticationController {
 
     @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> login(
-        @RequestBody AuthenticationDTO dto,
+        @RequestBody @Valid AuthenticationDTO dto,
         HttpServletResponse response
     ) {
         authenticationService.authenticate(dto, response);
@@ -31,7 +32,7 @@ public class AuthenticationController {
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> register(
-        @RequestBody RegisterDTO dto,
+        @RequestBody @Valid RegisterDTO dto,
         HttpServletResponse response
     ) {
         authenticationService.register(dto, response);
