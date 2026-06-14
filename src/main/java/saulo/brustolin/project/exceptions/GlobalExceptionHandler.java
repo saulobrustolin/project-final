@@ -31,4 +31,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleError(ErrorException ex) {
         return ResponseEntity.status(ex.getStatus()).body(new ErrorDTO(ex.getMessage()));
     }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<List<ValidationErrorDTO>> handleValidation(ValidationException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(List.of(new ValidationErrorDTO(ex.getField(), ex.getMessage())));
+    }
 }

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.auth.AuthenticationDTO;
 import saulo.brustolin.project.dtos.auth.RegisterDTO;
 import saulo.brustolin.project.exceptions.ErrorException;
+import saulo.brustolin.project.exceptions.ValidationException;
 import saulo.brustolin.project.repositories.UserRepository;
 import saulo.brustolin.project.utils.CookieUtil;
 import saulo.brustolin.project.entities.User;
@@ -37,7 +38,7 @@ public class AuthenticationService {
 
     public void register(RegisterDTO dto, HttpServletResponse response) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new ErrorException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "email", "Já existe um usuário com este e-mail");
         }
 
         if (!dto.password().equals(dto.confirmPassword())) {
