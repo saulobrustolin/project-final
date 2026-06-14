@@ -6,14 +6,15 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 
 @Component
-@AllArgsConstructor
 public class CookieUtil {
     
-    @Value("${api.security.token.expired}")
     private final Integer TIME_EXPIRED;
+
+    public CookieUtil(@Value("${api.security.token.expired}") Integer timeExpired) {
+        this.TIME_EXPIRED = timeExpired;
+    }
 
     public void addingCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("accessToken", token)
