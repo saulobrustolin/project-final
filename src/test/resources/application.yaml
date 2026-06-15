@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: project-test
+
+server:
+  servlet:
+    context-path: /api/v1
+
+---
+spring:
+  mongodb:
+    uri: ${MONGO_URI}
+    database: ${MONGO_DB}
+    username: ${MONGO_USER}
+    password: ${MONGO_PASSWORD}
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
+      expired: ${JWT_EXPIRED}

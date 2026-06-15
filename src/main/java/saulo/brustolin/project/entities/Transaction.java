@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.mongodb.lang.NonNull;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -17,12 +19,12 @@ public class Transaction {
     
     @Id
     private String id;
-    private final String description;
-    private final Integer amount;
-    private final String userId;
-    private final TransactionType type;
-    private final CollectionType collection;
-    private final Instant date;
+    @NonNull private String description;
+    @NonNull private Integer amount;
+    @NonNull private String userId;
+    @NonNull private TransactionType type;
+    @NonNull private CollectionType collection;
+    @NonNull private Instant date;
 
     @CreatedDate
     private Instant createdAt;

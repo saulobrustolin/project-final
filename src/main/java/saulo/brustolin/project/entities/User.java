@@ -12,6 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.mongodb.lang.NonNull;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -22,11 +24,11 @@ public class User implements UserDetails {
     
     @Id
     private String id;
-    private final String name;
-    private final String email;
-    private final String cpf;
+    @NonNull private String name;
+    @NonNull private String email;
+    @NonNull private String cpf;
     private Integer balance = 0;
-    private final String password;
+    @NonNull private String password;
     private UserRole role = UserRole.USER;
     private Boolean isActive = true;
 

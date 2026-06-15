@@ -14,6 +14,7 @@ import saulo.brustolin.project.dtos.users.UpdateUserDTO;
 import saulo.brustolin.project.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.mappers.UserMapper;
+import saulo.brustolin.project.repositories.UserRepository;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class UserService {
     private final TransactionService transactionService;
     private final UserMapper userMapper;
     private final BudgetService budgetService;
+    private final UserRepository userRepository;
 
     public ResumeUserDTO getResume(User user, YearMonth period) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, period);
@@ -43,5 +45,7 @@ public class UserService {
     @Transactional
     public void update(User user, UpdateUserDTO dto) {
         userMapper.updateEntityFromDto(dto, user);
+
+        userRepository.save(user);
     }
 }

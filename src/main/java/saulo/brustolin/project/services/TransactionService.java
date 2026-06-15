@@ -20,58 +20,77 @@ import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.mappers.TransactionMapper;
 import saulo.brustolin.project.repositories.TransactionRepository;
+import saulo.brustolin.project.repositories.UserRepository;
 
 @Service
 @AllArgsConstructor
 public class TransactionService {
-    
+
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
+    private final UserRepository userRepository;
 
+    @Transactional
     public void createTransaction(User user, CreateTransactionDTO dto) {
-        Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(), dto.collection(), dto.date());
+        Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(),
+                dto.collection(), dto.date());
 
         transactionRepository.save(transaction);
 
-        user.setBalance(user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount()));
+        user.setBalance(user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
+                : -transaction.getAmount()));
+
+        userRepository.save(user);
     }
 
     public TransactionResponseDTO getTransaction(User user, String transactionId) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
-            .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
-            
+                .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+
         return new TransactionResponseDTO(
-            transaction.getId(),
-            transaction.getDescription(),
-            transaction.getAmount(),
-            transaction.getType(),
-            transaction.getCollection()
-        );
+                transaction.getId(),
+                transaction.getDescription(),
+                transaction.getAmount(),
+                transaction.getType(),
+                transaction.getCollection());
     }
 
     @Transactional
     public void updateTransaction(User user, String transactionId, UpdateTransactionDTO dto) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
-            .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+                .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
         if (dto.amount() != null) {
-            int balanceAdjustment = (dto.amount() - transaction.getAmount()) * (transaction.getType() == TransactionType.INCOME ? 1 : -1);
-            user.setBalance(user.getBalance() + balanceAdjustment);
+            if (transaction.getType() == TransactionType.INCOME) {
+                user.setBalance(user.getBalance() - transaction.getAmount());
+            } else {
+                user.setBalance(user.getBalance() + transaction.getAmount());
+            }
+
+            if (transaction.getType() == TransactionType.INCOME) {
+                user.setBalance(user.getBalance() + dto.amount());
+            } else {
+                user.setBalance(user.getBalance() - dto.amount());
+            }
         }
 
         transactionMapper.updateEntityFromDto(dto, transaction);
+
+        transactionRepository.save(transaction);
     }
 
+    @Transactional
     public void deleteTransaction(User user, String transactionId) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
-            .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+                .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
         if (transaction.getUserId() != user.getId()) {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "Essa transação é privada");
         }
 
         transactionRepository.delete(transaction);
-        user.setBalance(user.getBalance() - (transaction.getType() == TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount()));
+        user.setBalance(user.getBalance() - (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
+                : -transaction.getAmount()));
     }
 
     public List<TransactionResponseDTO> getPeriod(User user, YearMonth period) {

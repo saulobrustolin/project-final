@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.budgets.BudgetResponseDTO;
+import saulo.brustolin.project.dtos.budgets.UpdateBudgetDTO;
 import saulo.brustolin.project.entities.Budget;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
+import saulo.brustolin.project.mappers.BudgetMapper;
 import saulo.brustolin.project.repositories.BudgetRepository;
 
 @Service
@@ -17,6 +20,7 @@ import saulo.brustolin.project.repositories.BudgetRepository;
 public class BudgetService {
     
     private final BudgetRepository budgetRepository;
+    private final BudgetMapper budgetMapper;
 
     public List<BudgetResponseDTO> getBudgets(User user) {
         List<Budget> budgets = budgetRepository.findAllByUserId(user.getId());
@@ -45,5 +49,23 @@ public class BudgetService {
         }
 
         budgetRepository.deleteById(budgetId);
+    }
+
+    @Transactional
+    public void updateBudget(
+        User user,
+        String budgetId,
+        UpdateBudgetDTO dto
+    ) {
+        Budget budget = budgetRepository.findById(budgetId)
+            .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Objetivo não encontrado"));
+
+        if (budget.getUserId() != user.getId()) {
+            throw new ErrorException(HttpStatus.UNAUTHORIZED, "Esse objetivo é privado");
+        }
+
+        budgetMapper.updateEntityFromDto(dto, budget);
+
+        budgetRepository.save(budget);
     }
 }

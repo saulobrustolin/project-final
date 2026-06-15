@@ -20,5 +20,7 @@ public interface UserMapper {
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "cpf", ignore = true)
+    @Mapping(target = "password", ignore = true)
     void updateEntityFromDto(UpdateUserDTO dto, @MappingTarget User entity);
 }

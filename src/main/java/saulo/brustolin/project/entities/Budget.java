@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.mongodb.lang.NonNull;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +19,9 @@ public class Budget {
     
     @Id
     private String id;
-    private final String description;
-    private final Integer target;
-    private final String userId;
+    @NonNull private String description;
+    @NonNull private Integer target;
+    @NonNull private String userId;
 
     @CreatedDate
     private Instant createdAt;

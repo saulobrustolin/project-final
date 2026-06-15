@@ -20,11 +20,12 @@ public class TokenService {
     @Value("${spring.application.name}")
     private String name;
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
+
         return JWT.create()
                 .withIssuer(name)
-                .withSubject(username)
+                .withSubject(email)
                 .withExpiresAt(genExpirationDate())
                 .sign(algorithm);
     }
@@ -32,6 +33,7 @@ public class TokenService {
     public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+
             return JWT.require(algorithm)
                     .withIssuer(name)
                     .build()

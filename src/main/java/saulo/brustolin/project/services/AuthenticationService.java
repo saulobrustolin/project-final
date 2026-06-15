@@ -28,7 +28,7 @@ public class AuthenticationService {
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
-            throw new ErrorException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
+            throw new ErrorException(HttpStatus.UNAUTHORIZED, "E-mail ou senha incorreta");
         }
 
         String token = tokenService.generateToken(user.getEmail());

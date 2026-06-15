@@ -54,7 +54,7 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    @PatchMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+    @PatchMapping(path = "/{transactionId}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> updateTransaction(
         @AuthenticationPrincipal User user,
         @PathVariable String transactionId,
@@ -65,8 +65,9 @@ public class TransactionController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+    @DeleteMapping(path = "/{transactionId}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Void> deleteTransaction(@AuthenticationPrincipal User user, @PathVariable String transactionId) {
+        System.out.println(transactionId);
         transactionService.deleteTransaction(user, transactionId);
         
         return ResponseEntity.ok().build();
