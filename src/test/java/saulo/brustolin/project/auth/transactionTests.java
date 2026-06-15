@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.mappers.TransactionMapper;
 import saulo.brustolin.project.repositories.TransactionRepository;
+import saulo.brustolin.project.repositories.UserRepository;
 import saulo.brustolin.project.services.TransactionService;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,8 +36,11 @@ public class transactionTests {
     @Mock
     private TransactionRepository transactionRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @Spy
-    private TransactionMapper transactionMapper;
+    private TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
 
     @InjectMocks
     private TransactionService service;
@@ -122,7 +127,7 @@ public class transactionTests {
 
         Transaction transaction = new Transaction(
             "pizza", 
-            7000, 
+            7000,
             "babalu", 
             TransactionType.EXPENSE, 
             new CollectionType("Food", "food"), 
@@ -133,7 +138,6 @@ public class transactionTests {
         Mockito.when(transactionRepository.findByIdAndUserId("pizza", user.getId())).thenReturn(Optional.of(transaction));
 
         UpdateTransactionDTO dto = new UpdateTransactionDTO("smash burguer", 5300, null, null, Instant.now());
-        transactionMapper.updateEntityFromDto(dto, transaction);
 
         // act
         service.updateTransaction(user, "pizza", dto);
@@ -141,7 +145,7 @@ public class transactionTests {
         // assert
         assertEquals(transaction.getAmount(), 5300, "O valor da transação deveria ter sido atualizada");
         assertEquals(transaction.getDescription(), "smash burguer", "O parãmetro de descrição deveria ter sido atualizado");
-        assertEquals(user.getBalance(), -6000, "O balance do usuário deveria ter sido atualizado");
+        assertEquals(user.getBalance(), 2700, "O balance do usuário deveria ter sido atualizado");
     }
 
     @Test

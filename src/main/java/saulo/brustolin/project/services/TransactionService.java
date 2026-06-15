@@ -60,23 +60,27 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
+        System.out.println(user.getBalance());
         if (dto.amount() != null) {
             if (transaction.getType() == TransactionType.INCOME) {
                 user.setBalance(user.getBalance() - transaction.getAmount());
             } else {
                 user.setBalance(user.getBalance() + transaction.getAmount());
             }
+            System.out.println(user.getBalance());
 
             if (transaction.getType() == TransactionType.INCOME) {
                 user.setBalance(user.getBalance() + dto.amount());
             } else {
                 user.setBalance(user.getBalance() - dto.amount());
             }
+            System.out.println(user.getBalance());
         }
 
         transactionMapper.updateEntityFromDto(dto, transaction);
 
         transactionRepository.save(transaction);
+        userRepository.save(user);
     }
 
     @Transactional
@@ -91,6 +95,7 @@ public class TransactionService {
         transactionRepository.delete(transaction);
         user.setBalance(user.getBalance() - (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
                 : -transaction.getAmount()));
+        userRepository.save(user);
     }
 
     public List<TransactionResponseDTO> getPeriod(User user, YearMonth period) {
