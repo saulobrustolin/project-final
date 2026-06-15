@@ -11,6 +11,8 @@ spring:
   mongodb:
     uri: ${MONGO_URI}
     database: ${MONGO_DB}
+    username: ${MONGO_USER}
+    password: ${MONGO_PASSWORD}
 
 api:
   security:
