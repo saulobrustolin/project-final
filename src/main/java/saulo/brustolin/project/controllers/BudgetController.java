@@ -25,7 +25,7 @@ public class BudgetController {
     
     private final BudgetService budgetService;
 
-    @GetMapping(produces = "application/json", consumes = "application/json")
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<BudgetResponseDTO>> allBudgets(
         @AuthenticationPrincipal User user
     ) {
