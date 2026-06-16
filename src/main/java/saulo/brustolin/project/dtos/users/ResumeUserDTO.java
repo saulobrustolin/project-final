@@ -8,6 +8,8 @@ import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 public record ResumeUserDTO(
     Integer balance,
     Integer net_balance,
+    Integer credit,
+    Integer debit,
     List<TransactionResponseDTO> transactions,
     List<BudgetResponseDTO> budgets
 ) {}

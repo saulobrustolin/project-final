@@ -27,16 +27,26 @@ public class UserService {
 
     public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
-
-        Integer net_balance = transactions.stream()
-            .mapToInt(t -> t.type() == TransactionType.INCOME ? t.amount() : -t.amount())
+        
+        Integer credit = transactions.stream()
+            .filter(t -> t.type() == TransactionType.EXPENSE)
+            .mapToInt(t -> t.amount())
             .sum();
+        
+        Integer debit = transactions.stream()
+            .filter(t -> t.type() == TransactionType.INCOME)
+            .mapToInt(t -> t.amount())
+            .sum();
+
+        Integer net_balance = credit - debit;
 
         List<BudgetResponseDTO> budgets = budgetService.getBudgets(user);
 
         return new ResumeUserDTO(
             user.getBalance(),
             net_balance,
+            credit,
+            debit,
             transactions,
             budgets
         );

@@ -1,6 +1,9 @@
 package saulo.brustolin.project.dtos.transactions;
 
 import saulo.brustolin.project.entities.TransactionType;
+
+import java.time.Instant;
+
 import saulo.brustolin.project.entities.CollectionType;
 import saulo.brustolin.project.entities.Transaction;
 
@@ -9,7 +12,8 @@ public record TransactionResponseDTO(
     String description,
     Integer amount,
     TransactionType type,
-    CollectionType collection
+    CollectionType collection,
+    Instant date
 ) {
     public final static TransactionResponseDTO fromEntity(Transaction transaction) {
         return new TransactionResponseDTO(
@@ -17,7 +21,8 @@ public record TransactionResponseDTO(
             transaction.getDescription(),
             transaction.getAmount(),
             transaction.getType(),
-            transaction.getCollection()
+            transaction.getCollection(),
+            transaction.getDate()
         );
     }
 }

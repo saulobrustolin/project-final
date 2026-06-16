@@ -48,11 +48,13 @@ public class TransactionService {
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
         return new TransactionResponseDTO(
-                transaction.getId(),
-                transaction.getDescription(),
-                transaction.getAmount(),
-                transaction.getType(),
-                transaction.getCollection());
+            transaction.getId(),
+            transaction.getDescription(),
+            transaction.getAmount(),
+            transaction.getType(),
+            transaction.getCollection(),
+            transaction.getDate()
+        );
     }
 
     @Transactional
