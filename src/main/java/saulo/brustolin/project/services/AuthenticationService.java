@@ -27,7 +27,9 @@ public class AuthenticationService {
         var user = userRepository.findByEmailAndIsActiveTrue(dto.email())
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
+        String passwordHashed = passwordEncoder.encode(dto.password());
+
+        if (!passwordEncoder.matches(passwordHashed, user.getPassword())) {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "E-mail ou senha incorreta");
         }
 
@@ -39,6 +41,9 @@ public class AuthenticationService {
     public void register(RegisterDTO dto, HttpServletResponse response) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new ValidationException(HttpStatus.BAD_REQUEST, "email", "Já existe um usuário com este e-mail");
+        }
+        if (userRepository.existsByCpf(dto.cpf())) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "cpf", "Já existe um usuário com este CPF");
         }
 
         if (!dto.password().equals(dto.confirmPassword())) {
