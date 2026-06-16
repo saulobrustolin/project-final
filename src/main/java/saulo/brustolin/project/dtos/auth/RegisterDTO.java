@@ -15,7 +15,7 @@ public record RegisterDTO(
     @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     @Pattern(
         regexp = ".*[!@#$%^&*(),.?:{}|<>_].*", 
-        message = "A senha deve conter pelo menos um caractere especial"
+        message = "A senha deve conter pelo menos um caractere especial (!@#$%^&*(),.?:{}|<>_)"
     )
     String password,
     @NotBlank(message = "A senha de confirmação é obrigatória") String confirmPassword
