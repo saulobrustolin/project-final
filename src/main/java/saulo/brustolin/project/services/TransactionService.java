@@ -1,8 +1,8 @@
 package saulo.brustolin.project.services;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -98,11 +98,16 @@ public class TransactionService {
         userRepository.save(user);
     }
 
-    public List<TransactionResponseDTO> getPeriod(User user, YearMonth period) {
-        YearMonth target = period != null ? period : YearMonth.now();
+    public List<TransactionResponseDTO> getPeriod(User user, LocalDate from, LocalDate to) {
+        if (from == null && to == null) {
+            throw new ErrorException(HttpStatus.BAD_REQUEST, "É obrigatório tem data inicial");
+        }
+        if (to == null) {
+            to = from;
+        }
 
-        Instant start = target.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Instant end = target.atEndOfMonth().atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant();
+        Instant start = from.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant end = from.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant();
 
         List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateBetween(user.getId(), start, end);
 

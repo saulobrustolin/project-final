@@ -1,6 +1,6 @@
 package saulo.brustolin.project.controllers;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -37,19 +37,20 @@ public class TransactionController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+    @GetMapping(path = "/{id}", produces = "application/json")
     public ResponseEntity<TransactionResponseDTO> getTransaction(@AuthenticationPrincipal User user, @PathVariable String transactionId) {
         TransactionResponseDTO transaction = transactionService.getTransaction(user, transactionId);
         
         return ResponseEntity.ok(transaction);
     }
 
-    @GetMapping(consumes = "application/json", produces = "application/json")
+    @GetMapping(produces = "application/json")
     public ResponseEntity<Iterable<TransactionResponseDTO>> getTransactions(
         @AuthenticationPrincipal User user,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth period
+        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate to
     ) {
-        Iterable<TransactionResponseDTO> transactions = transactionService.getPeriod(user, period);
+        Iterable<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
 
         return ResponseEntity.ok(transactions);
     }

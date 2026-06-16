@@ -1,6 +1,6 @@
 package saulo.brustolin.project.services;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ public class UserService {
     private final BudgetService budgetService;
     private final UserRepository userRepository;
 
-    public ResumeUserDTO getResume(User user, YearMonth period) {
-        List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, period);
+    public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
+        List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
 
         Integer net_balance = transactions.stream()
             .mapToInt(t -> t.type() == TransactionType.INCOME ? t.amount() : -t.amount())

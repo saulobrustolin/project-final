@@ -1,6 +1,6 @@
 package saulo.brustolin.project.controllers;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +30,10 @@ public class UserController {
     @GetMapping(path = "/resume", produces = "application/json")
     public ResumeUserDTO getResume(
         @AuthenticationPrincipal User user,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth period
+        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate to
     ) {
-        return userService.getResume(user, period);
+        return userService.getResume(user, from, to);
     }
 
     @GetMapping(path = "/me", produces = "application/json")
