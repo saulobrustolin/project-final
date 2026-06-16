@@ -27,9 +27,7 @@ public class AuthenticationService {
         var user = userRepository.findByEmailAndIsActiveTrue(dto.email())
             .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        String passwordHashed = passwordEncoder.encode(dto.password());
-
-        if (!passwordEncoder.matches(passwordHashed, user.getPassword())) {
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "E-mail ou senha incorreta");
         }
 

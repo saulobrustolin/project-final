@@ -120,7 +120,7 @@ public class transactionTests {
 
     @Test
     void updateSuccessChangeAmountTransaction() {
-        // assert
+        // arrange
         User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
