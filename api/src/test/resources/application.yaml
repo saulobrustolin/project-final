@@ -13,6 +13,11 @@ spring:
     database: ${MONGO_DB}
     username: ${MONGO_USER}
     password: ${MONGO_PASSWORD}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
 
 api:
   security:
