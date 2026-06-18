@@ -66,9 +66,8 @@ public class TransactionController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path = "/{transactionId}", consumes = "application/json", produces = "application/json")
+    @DeleteMapping(path = "/{transactionId}", produces = "application/json")
     public ResponseEntity<Void> deleteTransaction(@AuthenticationPrincipal User user, @PathVariable String transactionId) {
-        System.out.println(transactionId);
         transactionService.deleteTransaction(user, transactionId);
         
         return ResponseEntity.ok().build();

@@ -22,6 +22,8 @@ import saulo.brustolin.project.mappers.TransactionMapper;
 import saulo.brustolin.project.repositories.TransactionRepository;
 import saulo.brustolin.project.repositories.UserRepository;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 @Service
 @AllArgsConstructor
 public class TransactionService {
@@ -29,6 +31,11 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
     private final UserRepository userRepository;
+    private final RabbitTemplate rabbitTemplate;
+
+    public static final String QUEUE_NAME = "notifications.v1.transaction-created";
+    public static final String EXCHANGE_NAME = "notifications.v1.events";
+    public static final String ROUTING_KEY = "transaction-created";
 
     @Transactional
     public void createTransaction(User user, CreateTransactionDTO dto) {
@@ -41,6 +48,12 @@ public class TransactionService {
                 : -transaction.getAmount()));
 
         userRepository.save(user);
+
+        rabbitTemplate.convertAndSend(
+            EXCHANGE_NAME,
+            ROUTING_KEY,
+            transaction
+        );
     }
 
     public TransactionResponseDTO getTransaction(User user, String transactionId) {
@@ -62,21 +75,16 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
-        System.out.println(user.getBalance());
         if (dto.amount() != null) {
-            if (transaction.getType() == TransactionType.INCOME) {
-                user.setBalance(user.getBalance() - transaction.getAmount());
-            } else {
-                user.setBalance(user.getBalance() + transaction.getAmount());
-            }
-            System.out.println(user.getBalance());
+            Integer currentBalance = user.getBalance();
+            Integer oldAmount = transaction.getAmount();
+            Integer newAmount = dto.amount();
 
             if (transaction.getType() == TransactionType.INCOME) {
-                user.setBalance(user.getBalance() + dto.amount());
+                user.setBalance(currentBalance - oldAmount + newAmount);
             } else {
-                user.setBalance(user.getBalance() - dto.amount());
+                user.setBalance(currentBalance + oldAmount - newAmount);
             }
-            System.out.println(user.getBalance());
         }
 
         transactionMapper.updateEntityFromDto(dto, transaction);
@@ -90,7 +98,7 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
-        if (transaction.getUserId() != user.getId()) {
+        if (!transaction.getUserId().equals(user.getId())) {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "Essa transação é privada");
         }
 

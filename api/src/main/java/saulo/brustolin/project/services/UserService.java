@@ -38,7 +38,7 @@ public class UserService {
             .mapToInt(t -> t.amount())
             .sum();
 
-        Integer net_balance = credit - debit;
+        Integer net_balance = debit - credit;
 
         List<BudgetResponseDTO> budgets = budgetService.getBudgets(user);
 
