@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Notification {
     
-    @RabbitListener(queues = "notifications.v1.transaction-created")
+    @RabbitListener(queues = "#{transactionCreatedQueue.name}")
     public void sendCreatedTransactionMail(String message) {
         System.out.println(message);
     }

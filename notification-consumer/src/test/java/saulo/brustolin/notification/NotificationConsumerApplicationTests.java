@@ -1,4 +1,4 @@
-package saulo.brustolin.notification_consumer;
+package saulo.brustolin.notification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

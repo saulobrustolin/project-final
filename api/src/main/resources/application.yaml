@@ -19,3 +19,12 @@ api:
     token:
       secret: ${JWT_SECRET}
       expired: ${JWT_EXPIRED}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    listener:
+      simple:
+        concurrency: 3
+        max-concurrency: 10

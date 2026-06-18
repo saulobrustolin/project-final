@@ -4,6 +4,11 @@
     <artifactId>backend</artifactId>
     <version>4.1.0</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <lombok.version>1.18.30</lombok.version>
+    </properties>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -11,8 +16,19 @@
     </parent>
 
     <modules>
-        <module>project</module>
+        <module>api</module>
         <module>notification-consumer</module>
-        <module>shared</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
