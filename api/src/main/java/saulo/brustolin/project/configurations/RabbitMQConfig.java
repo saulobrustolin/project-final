@@ -1,23 +1,17 @@
 package saulo.brustolin.project.configurations;
 
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 @Configuration
 public class RabbitMQConfig {
     
-    public static final String QUEUE_NAME = "notifications.v1.transaction-created";
     public static final String EXCHANGE_NAME = "notifications.v1.events";
-    public static final String ROUTING_KEY = "transaction-created";
-
-    @Bean
-    public Queue queue() {
-        return new Queue(QUEUE_NAME, true);
-    }
 
     @Bean
     public DirectExchange exchange() {
@@ -25,7 +19,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    public Jackson2JsonMessageConverter messageConverter() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 }

@@ -3,6 +3,8 @@ package saulo.brustolin.project.services;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class UserService {
     private final BudgetService budgetService;
     private final UserRepository userRepository;
 
+    @Cacheable(value = "users", key = "#user.id")
     public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
         
@@ -40,7 +43,7 @@ public class UserService {
 
         Integer net_balance = debit - credit;
 
-        List<BudgetResponseDTO> budgets = budgetService.getBudgets(user);
+        List<BudgetResponseDTO> budgets = budgetService.getAll(user);
 
         return new ResumeUserDTO(
             user.getBalance(),
@@ -53,6 +56,7 @@ public class UserService {
     }
 
     @Transactional
+    @CachePut(value = "users", key = "#user.id")
     public void update(User user, UpdateUserDTO dto) {
         userMapper.updateEntityFromDto(dto, user);
 

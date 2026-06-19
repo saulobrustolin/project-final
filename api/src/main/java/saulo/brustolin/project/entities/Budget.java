@@ -21,6 +21,7 @@ public class Budget {
     private String id;
     @NonNull private String description;
     @NonNull private Integer target;
+    @NonNull private Integer balance;
     @NonNull private String userId;
 
     @CreatedDate

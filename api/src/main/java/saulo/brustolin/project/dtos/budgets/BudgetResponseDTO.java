@@ -11,13 +11,15 @@ public record BudgetResponseDTO(
     @NotBlank String budgetId,
     String description,
     @Positive Integer target,
+    @Positive Integer balance,
     @NotNull Instant createdAt
 ) {
     public final static BudgetResponseDTO fromEntity(Budget budget) {
         return new BudgetResponseDTO(
             budget.getId(), 
             budget.getDescription(), 
-            budget.getTarget(), 
+            budget.getTarget(),
+            budget.getBalance(),
             budget.getCreatedAt()
         );
     }

@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.repositories.UserRepository;
 import saulo.brustolin.project.services.TokenService;
+import saulo.brustolin.project.utils.CookieUtil;
 
 @Component
 @AllArgsConstructor
@@ -26,6 +27,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final CookieUtil cookieUtil;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -44,8 +46,15 @@ public class SecurityFilter extends OncePerRequestFilter {
 
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                cookieUtil.removeCookie(response);
+                return;
             }
+        } else {
+            cookieUtil.removeCookie(response);
+            return;
         }
+
         filterChain.doFilter(request, response);
     }
 

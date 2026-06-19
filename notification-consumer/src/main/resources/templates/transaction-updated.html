@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificação de Transação</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
+        <h2>Olá, <span th:text="${userName}">Usuário</span>!</h2>
+        <p>Uma transação existente foi atualizada na sua conta:</p>
+        
+        <ul>
+            <li><strong>Descrição:</strong> <span th:text="${description}">Depósito</span></li>
+            <li><strong>Valor:</strong> R$ <span th:text="${amount}">0.00</span></li>
+            <li><strong>Tipo:</strong> <span th:text="${type}">INCOME</span></li>
+        </ul>
+        
+        <p style="color: #888; font-size: 12px;">Enviado automaticamente por caixinha.</p>
+    </div>
+</body>
+</html>
