@@ -40,13 +40,18 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if (token != null) {
             var login = tokenService.validateToken(token);
-            if (login != null && !login.isEmpty()) {
-                UserDetails user = userRepository.findByEmailAndIsActiveTrue(login)
-                        .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+            try {
+                if (login != null && !login.isEmpty()) {
+                    UserDetails user = userRepository.findByEmailAndIsActiveTrue(login)
+                            .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    cookieUtil.removeCookie(response);
+                    return;
+                }
+            } catch (ErrorException e) {
                 cookieUtil.removeCookie(response);
                 return;
             }

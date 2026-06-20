@@ -1,4 +1,4 @@
-package saulo.brustolin.project.entities;
+package saulo.brustolin.shared.entities;
 
 public enum TransactionType {
     INCOME, EXPENSE

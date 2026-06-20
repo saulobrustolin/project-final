@@ -1,9 +1,12 @@
 package saulo.brustolin.project.services;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.auth.AuthenticationDTO;
@@ -53,5 +56,13 @@ public class AuthenticationService {
 
         String token = tokenService.generateToken(user.getEmail());
         cookieUtil.addingCookie(response, token);
+    }
+
+    public void logout(HttpServletResponse response) {
+        try {
+            cookieUtil.removeCookie(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,6 +8,8 @@ import com.resend.Resend;
 
 @Configuration
 public class ResendConfig {
+
+    public static final String EMAIL_FROM = "onboarding@resend.dev";
     
     @Value("${resend.api.key}")
     public String apiKey;

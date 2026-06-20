@@ -1,10 +1,10 @@
 package saulo.brustolin.project.dtos.transactions;
 
-import saulo.brustolin.project.entities.TransactionType;
+import saulo.brustolin.shared.entities.TransactionType;
 
 import java.time.Instant;
 
-import saulo.brustolin.project.entities.CollectionType;
+import saulo.brustolin.shared.entities.CollectionType;
 import saulo.brustolin.project.entities.Transaction;
 
 public record TransactionResponseDTO(

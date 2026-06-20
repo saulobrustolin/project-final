@@ -4,8 +4,8 @@ import java.time.Instant;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import saulo.brustolin.project.entities.TransactionType;
-import saulo.brustolin.project.entities.CollectionType;
+import saulo.brustolin.shared.entities.TransactionType;
+import saulo.brustolin.shared.entities.CollectionType;
 
 public record CreateTransactionDTO(
     String description,

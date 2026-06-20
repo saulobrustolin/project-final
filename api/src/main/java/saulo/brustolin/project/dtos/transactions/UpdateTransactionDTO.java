@@ -4,8 +4,8 @@ import java.time.Instant;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import saulo.brustolin.project.entities.CollectionType;
-import saulo.brustolin.project.entities.TransactionType;
+import saulo.brustolin.shared.entities.CollectionType;
+import saulo.brustolin.shared.entities.TransactionType;
 
 public record UpdateTransactionDTO(
     @Size(min = 1, message = "A descrição não pode ser vazia") String description,

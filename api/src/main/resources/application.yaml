@@ -8,17 +8,21 @@ server:
 
 ---
 spring:
-  mongodb:
-    uri: ${MONGO_URI}
-    database: ${MONGO_DB}
-    username: ${MONGO_USER}
-    password: ${MONGO_PASSWORD}
+  data:
+    mongodb:
+      uri: ${MONGO_URI}/${MONGO_DB}
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 api:
   security:
     token:
       secret: ${JWT_SECRET}
       expired: ${JWT_EXPIRED}
+
+---
+spring:
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: ${RABBITMQ_PORT}

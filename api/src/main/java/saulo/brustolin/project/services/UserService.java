@@ -3,20 +3,24 @@ package saulo.brustolin.project.services;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.configurations.RabbitMQConfig;
 import saulo.brustolin.project.dtos.budgets.BudgetResponseDTO;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
 import saulo.brustolin.project.dtos.users.UpdateUserDTO;
-import saulo.brustolin.project.entities.TransactionType;
+import saulo.brustolin.shared.dtos.VerificationCodeEvent;
+import saulo.brustolin.shared.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.mappers.UserMapper;
 import saulo.brustolin.project.repositories.UserRepository;
+import saulo.brustolin.project.utils.CodeGenerator;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +30,9 @@ public class UserService {
     private final UserMapper userMapper;
     private final BudgetService budgetService;
     private final UserRepository userRepository;
+    private final CodeGenerator codeGenerator;
+    private final RabbitTemplate rabbitTemplate;
+    private final VerificationCodeService verificationCodeService;
 
     @Cacheable(value = "users", key = "#user.id")
     public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
@@ -61,5 +68,16 @@ public class UserService {
         userMapper.updateEntityFromDto(dto, user);
 
         userRepository.save(user);
+    }
+
+    public void sendCode(User user) {
+        String code = codeGenerator.generateNumberCode();
+
+        verificationCodeService.saveCode(user.getId(), code);
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.EXCHANGE_NAME,
+            "user.verification-code",
+            new VerificationCodeEvent(user.getName(), code, user.getEmail())
+        );
     }
 }

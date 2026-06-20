@@ -51,4 +51,11 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping(path = "/send-code")
+    public ResponseEntity<Void> sendCode(@AuthenticationPrincipal User user) {
+        userService.sendCode(user);
+
+        return ResponseEntity.ok().build();
+    }
 }

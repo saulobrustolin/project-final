@@ -15,6 +15,7 @@ import com.resend.services.emails.model.CreateEmailOptions;
 
 import lombok.AllArgsConstructor;
 import saulo.brustolin.notification.configurations.RabbitMQConfig;
+import saulo.brustolin.notification.configurations.ResendConfig;
 import saulo.brustolin.notification.models.TransactionEvent;
 
 @Component
@@ -40,7 +41,7 @@ public class TransactionNotification {
         String htmlContent = templateEngine.process("transaction-created", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from("Acme <onboarding@resend.dev>")
+            .from(String.format("criação de transação. <%s>", ResendConfig.EMAIL_FROM))
             .to(message.email())
             .subject("uma nova transação foi criada.")
             .html(htmlContent)
@@ -69,7 +70,7 @@ public class TransactionNotification {
         String htmlContent = templateEngine.process("transaction-updated", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from("Acme <onboarding@resend.dev>")
+            .from(String.format("atualização de transação. <%s>", ResendConfig.EMAIL_FROM))
             .to(message.email())
             .subject("uma transação existente foi atualizada.")
             .html(htmlContent)

@@ -6,12 +6,36 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+    env_file: .env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
       - rabbitmq_logs:/var/log/rabbitmq
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: .env
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  notification-consumer:
+    container_name: notification-consumer
+    build:
+      context: .
+      dockerfile: notification-consumer/Dockerfile
+    env_file: .env
+    depends_on:
+      - rabbitmq
 
 volumes:
   rabbitmq_data:

@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.configurations.RabbitMQConfig;
 import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
-import saulo.brustolin.project.dtos.transactions.TransactionEvent;
+import saulo.brustolin.shared.dtos.*;
+import saulo.brustolin.shared.entities.*;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.transactions.UpdateTransactionDTO;
 import saulo.brustolin.project.entities.Transaction;
-import saulo.brustolin.project.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.mappers.TransactionMapper;
@@ -39,9 +39,7 @@ public class TransactionService {
     private final UserRepository userRepository;
     private final RabbitTemplate rabbitTemplate;
 
-    public static final String QUEUE_NAME = "notifications.v1.transaction-created";
     public static final String EXCHANGE_NAME = "notifications.v1.events";
-    public static final String ROUTING_KEY = "transaction.created";
 
     @Transactional
     @Caching(evict = {
@@ -61,8 +59,8 @@ public class TransactionService {
 
         rabbitTemplate.convertAndSend(
             RabbitMQConfig.EXCHANGE_NAME,
-            "transaction-created",
-            TransactionEvent.fromEntity(transaction, user.getEmail(), user.getName())
+            "transaction.created",
+            new TransactionEvent(transaction.getId(), transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
         );
     }
 
@@ -114,7 +112,7 @@ public class TransactionService {
         rabbitTemplate.convertAndSend(
             RabbitMQConfig.EXCHANGE_NAME,
             "transaction.updated",
-            TransactionEvent.fromEntity(transaction, user.getEmail(), user.getName())
+            new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
         );
     }
 
@@ -138,8 +136,8 @@ public class TransactionService {
 
         rabbitTemplate.convertAndSend(
             RabbitMQConfig.EXCHANGE_NAME,
-            "transaction-deleted",
-            TransactionEvent.fromEntity(transaction, user.getEmail(), user.getName())
+            "transaction.deleted",
+            new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
         );
     }
 

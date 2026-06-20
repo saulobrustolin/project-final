@@ -11,6 +11,8 @@ import com.mongodb.lang.NonNull;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import saulo.brustolin.shared.entities.CollectionType;
+import saulo.brustolin.shared.entities.TransactionType;
 
 @Data
 @Document(collection = "Transactions")

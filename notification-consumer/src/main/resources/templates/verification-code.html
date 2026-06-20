@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Código de verificação</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
+        <h2>Olá, <span th:text="${userName}">Usuário</span>!</h2>
+        <p>você pediu um código de verificação? aqui está</p>
+        
+        <code th:text="${code}"></codeth>
+        
+        <p style="color: #888; font-size: 12px;">Enviado automaticamente por caixinha.</p>
+    </div>
+</body>
+</html>
