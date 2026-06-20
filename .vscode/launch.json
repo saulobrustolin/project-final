@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot - Final project application",
+            "request": "launch",
+            "mainClass": "saulo.brustolin.project.FinalApplication",
+            "env": {
+                "JWT_SECRET": "665775ae440d523146e6fb4f7b5c8192a56a773c3de8fe1b6c7ccc573cf09e49",
+                "MONGO_URI": "mongodb://localhost:27017",
+                "MONGO_DB": "final-project",
+                "JWT_EXPIRED": 3600,
+                "RABBITMQ_HOST": "localhost",
+                "RABBITMQ_PORT": 5672,
+                "RABBITMQ_USER": "guest",
+                "RABBITMQ_PASSWORD": "guest",
+                "RESEND_KEY": "re_A2rgV4uN_ErMSRNe3ufYdXguzDdoBsR2C"
+            }
+        }
+    ]
+}

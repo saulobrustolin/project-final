@@ -82,12 +82,19 @@ public class TransactionService {
     }
 
     @Transactional
-    @CachePut(value = "transactions", key = "#transactionId")
+    @Caching(
+        put = {
+            @CachePut(value = "transactions", key = "#transactionId")
+        },
+        evict = {
+            @CacheEvict(value = "users", key = "#user.id")
+        }
+    )
     public void updateTransaction(User user, String transactionId, UpdateTransactionDTO dto) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
-        if (dto.amount() != null) {
+        if (dto.amount() != null && !dto.amount().equals(transaction.getAmount())) {
             Integer currentBalance = user.getBalance();
             Integer oldAmount = transaction.getAmount();
             Integer newAmount = dto.amount();

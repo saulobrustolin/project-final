@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 
 import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
@@ -25,6 +26,7 @@ import saulo.brustolin.project.entities.Transaction;
 import saulo.brustolin.project.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
+import saulo.brustolin.project.mappers.BudgetMapper;
 import saulo.brustolin.project.mappers.TransactionMapper;
 import saulo.brustolin.project.repositories.TransactionRepository;
 import saulo.brustolin.project.repositories.UserRepository;
@@ -44,6 +46,12 @@ public class transactionTests {
 
     @InjectMocks
     private TransactionService service;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
+    @Mock
+    private BudgetMapper budgetMapper;
 
     @Test
     void createSuccessTransaction() {
