@@ -2,6 +2,7 @@ package saulo.brustolin.project.services;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import saulo.brustolin.project.configurations.RabbitMQConfig;
 import saulo.brustolin.project.dtos.budgets.BudgetResponseDTO;
 import saulo.brustolin.project.dtos.budgets.CreateBudgetDTO;
 import saulo.brustolin.project.dtos.budgets.UpdateBudgetDTO;
@@ -19,6 +21,7 @@ import saulo.brustolin.project.entities.User;
 import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.mappers.BudgetMapper;
 import saulo.brustolin.project.repositories.BudgetRepository;
+import saulo.brustolin.shared.dtos.BudgetEvent;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +29,7 @@ public class BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final BudgetMapper budgetMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Cacheable(value = "budgetsList", key = "#user.id")
     public List<BudgetResponseDTO> getAll(User user) {
@@ -83,6 +87,12 @@ public class BudgetService {
 
         budgetRepository.save(budget);
 
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.EXCHANGE_NAME,
+            "budget.target",
+            new BudgetEvent(budget.getDescription(), budget.getBalance(), budget.getTarget(), user.getEmail(), user.getName())
+        );
+
         return BudgetResponseDTO.fromEntity(budget);
     }
 
@@ -92,6 +102,12 @@ public class BudgetService {
             CreateBudgetDTO dto,
             User user) {
         Budget budget = new Budget(dto.description(), dto.target(), dto.balance(), user.getId());
+
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.EXCHANGE_NAME,
+            "budget.created",
+            new BudgetEvent(budget.getDescription(), budget.getBalance(), budget.getTarget(), user.getEmail(), user.getName())
+        );
 
         budgetRepository.save(budget);
     }

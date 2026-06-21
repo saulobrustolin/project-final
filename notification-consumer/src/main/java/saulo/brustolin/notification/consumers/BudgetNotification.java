@@ -18,11 +18,11 @@ import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.notification.configurations.RabbitMQConfig;
 import saulo.brustolin.notification.configurations.ResendConfig;
-import saulo.brustolin.notification.models.TransactionEvent;
+import saulo.brustolin.shared.dtos.BudgetEvent;
 
 @Component
 @AllArgsConstructor
-public class TransactionNotification {
+public class BudgetNotification {
 
     private final Resend resend;
     private final TemplateEngine templateEngine;
@@ -30,24 +30,29 @@ public class TransactionNotification {
     private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
     
     @RabbitListener(bindings = @QueueBinding(
-        value = @Queue(value = "notifications.v1.transaction-created", durable = "true"),
+        value = @Queue(value = "notifications.v1.budget", durable = "true"),
         exchange = @Exchange(value = RabbitMQConfig.EXCHANGE_NAME, type = "direct"),
-        key = "transaction.created"
+        key = "budget.target"
     ))
-    public void sendCreatedTransactionMail(TransactionEvent message) {
+    public void sendBudgetStateMail(BudgetEvent message) {
         Context context = new Context();
         context.setVariables(Map.of(
             "fullname", message.fullname(),
-            "description", message.description(),
-            "amount", numberFormat.format(message.amount() / 100),
-            "type", message.type()
+            "description", message.name()
         ));
-        String htmlContent = templateEngine.process("transaction-created", context);
+
+        Boolean budgetCompleted = message.balance().equals(message.target());
+        String htmlContent = "";
+        if (budgetCompleted) {
+            htmlContent = templateEngine.process("budget-completed", context);
+        } else {
+            htmlContent = templateEngine.process("budget-proccess", context);
+        }
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("criação de transação. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("%s <%s>", (budgetCompleted ? "parabéns, você atingiu sua meta." : "nova atualização na sua meta, você está quase lá"), ResendConfig.EMAIL_FROM))
             .to(message.email())
-            .subject("uma nova transação foi criada.")
+            .subject("código de confirmação.")
             .html(htmlContent)
             .build();
 
@@ -59,24 +64,26 @@ public class TransactionNotification {
     }
 
     @RabbitListener(bindings = @QueueBinding(
-        value = @Queue(value = "notifications.v1.transaction-updated", durable = "true"),
+        value = @Queue(value = "notifications.v1.budget", durable = "true"),
         exchange = @Exchange(value = RabbitMQConfig.EXCHANGE_NAME, type = "direct"),
-        key = "transaction.updated"
+        key = "budget.created"
     ))
-    public void sendUpdatedTransactionMail(TransactionEvent message) {
+    public void sendBudgetCreatedMail(BudgetEvent message) {
         Context context = new Context();
         context.setVariables(Map.of(
             "fullname", message.fullname(),
-            "description", message.description(),
-            "amount", numberFormat.format(message.amount() / 100),
-            "type", message.type()
+            "email", message.email(),
+            "balance", numberFormat.format(message.balance() / 100),
+            "target", numberFormat.format(message.target() / 100),
+            "description", message.name()
         ));
-        String htmlContent = templateEngine.process("transaction-updated", context);
+
+        String htmlContent = templateEngine.process("budget-created", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("atualização de transação. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("um novo objetivo foi criado. <%s>", ResendConfig.EMAIL_FROM))
             .to(message.email())
-            .subject("uma transação existente foi atualizada.")
+            .subject("código de confirmação.")
             .html(htmlContent)
             .build();
 
