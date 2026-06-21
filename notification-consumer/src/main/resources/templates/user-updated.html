@@ -2,15 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Código de verificação</title>
+    <title>Notificação de usuário</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
     <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
         <h2>Olá, <span th:text="${fullname}">Usuário</span>!</h2>
-        <p>você pediu um código de verificação? aqui está</p>
-        
-        <code th:text="${code}"></code>
-        
+        <p>A sua conta teve dados atualizados.</p>
+                
         <p style="color: #888; font-size: 12px;">Enviado automaticamente por caixinha.</p>
     </div>
 </body>

@@ -13,14 +13,14 @@ import lombok.AllArgsConstructor;
 public class VerificationCode {
 
     @Id
-    private String userId;
+    private String id;
     private String code;
 
     @Indexed(expireAfterSeconds = 0)
     private Instant expiresAt;
 
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public String getUserId() { return id; }
+    public void setUserId(String userId) { this.id = userId; }
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
     public Instant getExpiresAt() { return expiresAt; }

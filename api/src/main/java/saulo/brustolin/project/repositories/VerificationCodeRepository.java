@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import saulo.brustolin.project.entities.VerificationCode;
 
 public interface VerificationCodeRepository extends MongoRepository<VerificationCode, String> {
-    Optional<VerificationCode> findByUserIdAndCode(String userId, String code);
+    Optional<VerificationCode> findByIdAndCode(String userId, String code);
 }

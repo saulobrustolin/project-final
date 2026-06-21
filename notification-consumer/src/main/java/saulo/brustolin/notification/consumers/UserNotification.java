@@ -20,29 +20,28 @@ import saulo.brustolin.shared.dtos.VerificationCodeEvent;
 
 @Component
 @AllArgsConstructor
-public class VerificationCodeNotification {
+public class UserNotification {
 
     private final Resend resend;
     private final TemplateEngine templateEngine;
     
     @RabbitListener(bindings = @QueueBinding(
-        value = @Queue(value = "notifications.v1.verification-code", durable = "true"),
+        value = @Queue(value = "notifications.v1.user", durable = "true"),
         exchange = @Exchange(value = RabbitMQConfig.EXCHANGE_NAME, type = "direct"),
-        key = "user.verification-code"
+        key = "user.updated"
     ))
     public void sendVerificationCodeMail(VerificationCodeEvent message) {
         Context context = new Context();
         context.setVariables(Map.of(
             "fullname", message.fullName(),
-            "email", message.email(),
-            "code", message.code()
+            "email", message.email()
         ));
-        String htmlContent = templateEngine.process("verification-code", context);
+        String htmlContent = templateEngine.process("user-updated", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("código de verificação. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("usuário atualizado. <%s>", ResendConfig.EMAIL_FROM))
             .to(message.email())
-            .subject("código de confirmação.")
+            .subject("usuário atualizado.")
             .html(htmlContent)
             .build();
 

@@ -26,7 +26,7 @@ public class VerificationCodeService {
     }
 
     public boolean validateCode(String userId, String inputCode) {
-        Optional<VerificationCode> savedCodeOpt = repository.findByUserIdAndCode(userId, inputCode);
+        Optional<VerificationCode> savedCodeOpt = repository.findByIdAndCode(userId, inputCode);
 
         if (savedCodeOpt.isPresent()) {
             VerificationCode savedCode = savedCodeOpt.get();
