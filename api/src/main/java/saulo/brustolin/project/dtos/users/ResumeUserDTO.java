@@ -10,6 +10,5 @@ public record ResumeUserDTO(
     Integer net_balance,
     Integer credit,
     Integer debit,
-    List<TransactionResponseDTO> transactions,
-    List<BudgetResponseDTO> budgets
+    List<TransactionResponseDTO> transactions
 ) {}

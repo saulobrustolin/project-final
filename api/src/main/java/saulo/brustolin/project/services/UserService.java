@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.configurations.RabbitMQConfig;
-import saulo.brustolin.project.dtos.budgets.BudgetResponseDTO;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.users.ResumeUserDTO;
 import saulo.brustolin.project.dtos.users.UpdateUserDTO;
@@ -21,7 +20,6 @@ import saulo.brustolin.shared.dtos.UserEvent;
 import saulo.brustolin.shared.dtos.VerificationCodeEvent;
 import saulo.brustolin.shared.entities.TransactionType;
 import saulo.brustolin.project.entities.User;
-import saulo.brustolin.project.exceptions.ErrorException;
 import saulo.brustolin.project.exceptions.ValidationException;
 import saulo.brustolin.project.mappers.UserMapper;
 import saulo.brustolin.project.repositories.UserRepository;
@@ -33,7 +31,6 @@ public class UserService {
 
     private final TransactionService transactionService;
     private final UserMapper userMapper;
-    private final BudgetService budgetService;
     private final UserRepository userRepository;
     private final CodeGenerator codeGenerator;
     private final RabbitTemplate rabbitTemplate;
@@ -56,15 +53,12 @@ public class UserService {
 
         Integer net_balance = debit - credit;
 
-        List<BudgetResponseDTO> budgets = budgetService.getAll(user);
-
         return new ResumeUserDTO(
             user.getBalance(),
             net_balance,
             credit,
             debit,
-            transactions,
-            budgets
+            transactions
         );
     }
 
