@@ -62,7 +62,8 @@ public class transactionTests {
 
         CreateTransactionDTO transaction = new CreateTransactionDTO(
             "shopping",
-            900, 
+            900,
+            null,
             new CollectionType("Shopping", "cart"), 
             TransactionType.INCOME, 
             Instant.now()
@@ -144,9 +145,9 @@ public class transactionTests {
         transaction.setId("pizza");
 
         Mockito.when(transactionRepository.findByIdAndUserId("pizza", user.getId())).thenReturn(Optional.of(transaction));
-
-        UpdateTransactionDTO dto = new UpdateTransactionDTO("smash burguer", 5300, null, null, Instant.now());
-
+        
+        UpdateTransactionDTO dto = new UpdateTransactionDTO("smash burguer", 5300, null, null, null, Instant.now());
+        
         // act
         service.updateTransaction(user, "pizza", dto);
 

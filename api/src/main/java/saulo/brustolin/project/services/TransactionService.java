@@ -4,7 +4,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,25 +46,34 @@ public class TransactionService {
 
     @Transactional
     @Caching(evict = {
-        @CacheEvict(value = "users", key = "#user.id"),
-        @CacheEvict(value = "transactions", key = "#user.id")
+            @CacheEvict(value = "users", key = "#user.id"),
+            @CacheEvict(value = "transactions", key = "#user.id")
     })
     public void createTransaction(User user, CreateTransactionDTO dto) {
         Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(),
                 dto.collection(), dto.date());
 
-        transactionRepository.save(transaction);
+        try {
+            user.setBalance(
+                    user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
+                            : -transaction.getAmount()));
+            userRepository.save(user);
 
-        user.setBalance(user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
-                : -transaction.getAmount()));
+            if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
+                createSubdivisionTransactions(user, transaction, dto.subdivision());
+                return;
+            };
 
-        userRepository.save(user);
+            transactionRepository.save(transaction);
+        } finally {
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE_NAME,
+                    "transaction.created",
+                    new TransactionEvent(transaction.getId(), transaction.getDescription(), transaction.getAmount(),
+                            transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(),
+                            user.getName()));
+        }
 
-        rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE_NAME,
-            "transaction.created",
-            new TransactionEvent(transaction.getId(), transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
-        );
     }
 
     @Cacheable(value = "transactions", key = "#transactionId")
@@ -70,24 +82,20 @@ public class TransactionService {
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
         return new TransactionResponseDTO(
-            transaction.getId(),
-            transaction.getDescription(),
-            transaction.getAmount(),
-            transaction.getType(),
-            transaction.getCollection(),
-            transaction.getDate()
-        );
+                transaction.getId(),
+                transaction.getDescription(),
+                transaction.getAmount(),
+                transaction.getType(),
+                transaction.getCollection(),
+                transaction.getDate());
     }
 
     @Transactional
-    @Caching(
-        put = {
+    @Caching(put = {
             @CachePut(value = "transactions", key = "#transactionId")
-        },
-        evict = {
+    }, evict = {
             @CacheEvict(value = "users", key = "#user.id")
-        }
-    )
+    })
     public void updateTransaction(User user, String transactionId, UpdateTransactionDTO dto) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
@@ -105,22 +113,24 @@ public class TransactionService {
         }
 
         transactionMapper.updateEntityFromDto(dto, transaction);
-
-        transactionRepository.save(transaction);
         userRepository.save(user);
 
+        if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
+            createSubdivisionTransactions(user, transaction, dto.subdivision());
+            return;
+        };
+
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE_NAME,
-            "transaction.updated",
-            new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
-        );
+                RabbitMQConfig.EXCHANGE_NAME,
+                "transaction.updated",
+                new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(),
+                        transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(),
+                        user.getName()));
+
+        transactionRepository.save(transaction);
     }
 
     @Transactional
-    @Caching(evict = {
-        @CacheEvict(value = "users", key = "#user.id"),
-        @CacheEvict(value = "transactions", key = "#transactionId")
-    })
     public void deleteTransaction(User user, String transactionId) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
@@ -135,22 +145,46 @@ public class TransactionService {
         userRepository.save(user);
 
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE_NAME,
-            "transaction.deleted",
-            new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(), transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(), user.getName())
-        );
+                RabbitMQConfig.EXCHANGE_NAME,
+                "transaction.deleted",
+                new TransactionEvent(transactionId, transaction.getDescription(), transaction.getAmount(),
+                        transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(),
+                        user.getName()));
     }
 
     public List<TransactionResponseDTO> getPeriod(User user, LocalDate from, LocalDate to) {
         if (to == null) {
             to = from;
         }
-
+        
         Instant start = from.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant end = to.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant();
 
         List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateBetween(user.getId(), start, end);
 
         return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
+    }
+
+    public void createSubdivisionTransactions(User user, Transaction transaction, Integer subdivision) {
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        Integer subdivisionValue = transaction.getAmount() / subdivision;
+
+        for (Integer i = 1; i <= subdivision; i++) {
+            ZonedDateTime baseDate = transaction.getDate().atZone(ZoneId.of("UTC"));
+            Transaction t = new Transaction(
+                    String.format("%d de %d | %s", i, subdivision, transaction.getDescription()),
+                    subdivisionValue,
+                    user.getId(),
+                    transaction.getType(),
+                    transaction.getCollection(),
+                    baseDate.plusMonths(i - 1).toInstant());
+            System.out.println(t);
+            transactions.add(t);
+        }
+
+        if (transaction.getId() != null && Optional.of(transaction.getId()).isPresent())
+            deleteTransaction(user, transaction.getId());
+
+        transactionRepository.saveAll(transactions);
     }
 }

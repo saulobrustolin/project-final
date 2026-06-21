@@ -10,6 +10,7 @@ import saulo.brustolin.shared.entities.TransactionType;
 public record UpdateTransactionDTO(
     @Size(min = 1, message = "A descrição não pode ser vazia") String description,
     @Positive Integer amount,
+    @Positive Integer subdivision,
     TransactionType type,
     CollectionType collection,
     Instant date

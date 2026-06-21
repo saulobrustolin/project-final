@@ -40,7 +40,7 @@ public class UserService {
     private final VerificationCodeService verificationCodeService;
     private final PasswordEncoder passwordEncoder;
 
-    @Cacheable(value = "users", key = "#user.id")
+    @Cacheable(value = "users", key = "#user.id + '-' + #from + '-' + #to")
     public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
         
