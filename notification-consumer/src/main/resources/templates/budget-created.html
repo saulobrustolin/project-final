@@ -7,11 +7,11 @@
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
     <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
         <h2>Olá, <span th:text="${fullname}">Usuário</span>!</h2>
-        <p>Você criou um novo budget, meus parabéns</p>
+        <p>você criou um novo budget, meus parabéns! estamos a um passo da sua conquista.</p>
         
         <ul>
             <li><strong>Descrição:</strong> <span th:text="${description}">Depósito</span></li>
-            <li><strong>Meta:</strong> R$ <span th:text="${target}">0.00</span></li>
+            <li><strong>Meta:</strong> <span th:text="${target}">0.00</span></li>
             <li><strong>Saldo:</strong> <span th:text="${balance}">INCOME</span></li>
         </ul>
         

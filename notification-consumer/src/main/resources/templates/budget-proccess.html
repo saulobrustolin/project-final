@@ -7,12 +7,12 @@
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
     <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
         <h2>Olá, <span th:text="${fullname}">Usuário</span>!</h2>
-        <p>Você está mais próximo de atingir a sua meta <strong th:text="${description}" style="font-weight: 500;">Descrição</strong>!</p>
+        <p>você está mais próximo de atingir a sua meta <strong th:text="${description}" style="font-weight: 500;">Descrição</strong>!</p>
         
         <ul>
             <li><strong>Descrição:</strong> <span th:text="${description}">Descrição</span></li>
-            <li><strong>Meta:</strong> R$ <span th:text="${target}">0.00</span></li>
-            <li><strong>Saldo:</strong> R$ <span th:text="${balance}">0.00</span></li>
+            <li><strong>Meta:</strong> <span th:text="${target}">0.00</span></li>
+            <li><strong>Saldo:</strong> <span th:text="${balance}">0.00</span></li>
         </ul>
         
         <p style="color: #888; font-size: 12px;">Enviado automaticamente por caixinha.</p>
