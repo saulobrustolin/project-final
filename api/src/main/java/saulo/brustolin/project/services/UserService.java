@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,6 @@ public class UserService {
     private final VerificationCodeService verificationCodeService;
     private final PasswordEncoder passwordEncoder;
 
-    @Cacheable(value = "users", key = "#user.id + '-' + #from + '-' + #to")
     public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
         
