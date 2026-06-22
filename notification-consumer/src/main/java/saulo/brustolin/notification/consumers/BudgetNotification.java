@@ -41,7 +41,7 @@ public class BudgetNotification {
             "description", message.name()
         ));
 
-        Boolean budgetCompleted = message.balance().equals(message.target());
+        Boolean budgetCompleted = message.balance() >= message.target();
         String htmlContent = "";
         if (budgetCompleted) {
             htmlContent = templateEngine.process("budget-completed", context);
@@ -52,7 +52,7 @@ public class BudgetNotification {
         CreateEmailOptions params = CreateEmailOptions.builder()
             .from(String.format("%s <%s>", (budgetCompleted ? "parabéns, você atingiu sua meta." : "nova atualização na sua meta, você está quase lá"), ResendConfig.EMAIL_FROM))
             .to(message.email())
-            .subject("código de confirmação.")
+            .subject("atualização nas suas metas.")
             .html(htmlContent)
             .build();
 
@@ -83,7 +83,7 @@ public class BudgetNotification {
         CreateEmailOptions params = CreateEmailOptions.builder()
             .from(String.format("um novo objetivo foi criado. <%s>", ResendConfig.EMAIL_FROM))
             .to(message.email())
-            .subject("código de confirmação.")
+            .subject("parabéns, você está a um passo de uma nova conquista.")
             .html(htmlContent)
             .build();
 
