@@ -54,7 +54,9 @@ public class BudgetTest {
     @BeforeEach
     void setUp() {
         user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
+        user.setId("id-1");
         alternativeUser = new User("Miguel", "miguel@gmail.com", "056.757.920-40", "senha123$");
+        alternativeUser.setId("id-2");
     }
 
     @Test

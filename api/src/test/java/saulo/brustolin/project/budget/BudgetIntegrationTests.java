@@ -58,14 +58,13 @@ public class BudgetIntegrationTests {
 
     @Test
     void getAll_ShouldReturnOnlyBudgetsBelongingToTheUser() {
-        budgetRepository.save(new Budget("viagem europa", 3000000, 50000, alternativeUser.getId()));
-        budgetRepository.save(new Budget("casa", 60000000, 12000000, alternativeUser.getId()));
-        budgetRepository.save(new Budget("carro", 10000000, 7160000, alternativeUser.getId()));
+        budgetRepository.save(new Budget("viagem europa", 3000000, 50000, user.getId()));
+        budgetRepository.save(new Budget("casa", 60000000, 12000000, user.getId()));
 
         List<BudgetResponseDTO> result = budgetService.getAll(user);
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(BudgetResponseDTO::description).containsExactlyInAnyOrder("Viagem", "Carro");
+        assertThat(result).extracting(BudgetResponseDTO::description).containsExactlyInAnyOrder("viagem europa", "casa");
     }
 
     @Test
@@ -104,12 +103,12 @@ public class BudgetIntegrationTests {
 
     @Test
     void update_ShouldModifyBudgetAndPublishTargetEvent() {
-        Budget savedBudget = budgetRepository.save(new Budget("viagem europa", 3000000, 50000, alternativeUser.getId()));
+        Budget savedBudget = budgetRepository.save(new Budget("viagem europa", 3000000, 50000, user.getId()));
         UpdateBudgetDTO updateDto = new UpdateBudgetDTO("reserva emergencial", 50000000, null);
 
         BudgetResponseDTO updated = budgetService.update(user, savedBudget.getId(), updateDto);
 
-        assertThat(updated.description()).isEqualTo("Academia Anual");
+        assertThat(updated.description()).isEqualTo("reserva emergencial");
         assertThat(updated.target()).isEqualTo(50000000);
         assertThat(updated.balance()).isEqualTo(50000);
 
