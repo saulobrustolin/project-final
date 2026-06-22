@@ -1,4 +1,4 @@
-package saulo.brustolin.project.auth;
+package saulo.brustolin.project.transaction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +33,7 @@ import saulo.brustolin.project.repositories.UserRepository;
 import saulo.brustolin.project.services.TransactionService;
 
 @ExtendWith(MockitoExtension.class)
-public class transactionTests {
+public class TransactionTests {
     
     @Mock
     private TransactionRepository transactionRepository;
@@ -54,8 +54,7 @@ public class transactionTests {
     private BudgetMapper budgetMapper;
 
     @Test
-    void createSuccessTransaction() {
-        // assert
+    void create_SuccessTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
@@ -69,10 +68,8 @@ public class transactionTests {
             Instant.now()
         );
 
-        // act
         service.createTransaction(user, transaction);
 
-        // assert
         assertEquals(1900, user.getBalance());
 
         ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
@@ -85,8 +82,7 @@ public class transactionTests {
     }
 
     @Test
-    void getSuccessTransaction() {
-        // assert
+    void get_SuccessTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
@@ -103,10 +99,8 @@ public class transactionTests {
 
         Mockito.when(transactionRepository.findByIdAndUserId(transaction.getId(), transaction.getUserId())).thenReturn(Optional.of(transaction));
 
-        // act
         TransactionResponseDTO dto = service.getTransaction(user, transaction.getId());
 
-        // assert
         assertEquals(transaction.getId(), dto.transactionId());
         assertEquals(transaction.getDescription(), dto.description());
         assertEquals(transaction.getAmount(), dto.amount());
@@ -115,8 +109,7 @@ public class transactionTests {
     }
 
     @Test
-    void getErrorTransaction() {
-        // assert
+    void get_ErrorTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
@@ -128,8 +121,7 @@ public class transactionTests {
     }
 
     @Test
-    void updateSuccessChangeAmountTransaction() {
-        // arrange
+    void update_SuccessChangeAmountTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
@@ -148,17 +140,15 @@ public class transactionTests {
         
         UpdateTransactionDTO dto = new UpdateTransactionDTO("smash burguer", 5300, null, null, null, Instant.now());
         
-        // act
         service.updateTransaction(user, "pizza", dto);
 
-        // assert
         assertEquals(transaction.getAmount(), 5300, "O valor da transação deveria ter sido atualizada");
         assertEquals(transaction.getDescription(), "smash burguer", "O parãmetro de descrição deveria ter sido atualizado");
         assertEquals(user.getBalance(), 2700, "O balance do usuário deveria ter sido atualizado");
     }
 
     @Test
-    void updateNotFoundDeleteTransaction() {
+    void update_NotFoundDeleteTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
 
         ErrorException exception = assertThrows(ErrorException.class, () -> service.deleteTransaction(user, "babalu"));

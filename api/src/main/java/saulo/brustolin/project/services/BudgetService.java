@@ -98,7 +98,7 @@ public class BudgetService {
 
     @Transactional
     @CacheEvict(value = "budgetsList", key = "#user.id")
-    public void create(
+    public Budget create(
             CreateBudgetDTO dto,
             User user) {
         Budget budget = new Budget(dto.description(), dto.target(), dto.balance(), user.getId());
@@ -109,6 +109,6 @@ public class BudgetService {
             new BudgetEvent(budget.getDescription(), budget.getBalance(), budget.getTarget(), user.getEmail(), user.getName())
         );
 
-        budgetRepository.save(budget);
+        return budgetRepository.save(budget);
     }
 }
