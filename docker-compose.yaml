@@ -16,6 +16,9 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
   api:
     container_name: api
     build:
@@ -53,3 +56,4 @@ services:
 volumes:
   rabbitmq_data:
   rabbitmq_logs:
+  mongo_data:
