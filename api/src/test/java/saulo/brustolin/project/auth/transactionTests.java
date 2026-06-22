@@ -56,7 +56,7 @@ public class transactionTests {
     @Test
     void createSuccessTransaction() {
         // assert
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
 
@@ -87,7 +87,7 @@ public class transactionTests {
     @Test
     void getSuccessTransaction() {
         // assert
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
 
@@ -117,7 +117,7 @@ public class transactionTests {
     @Test
     void getErrorTransaction() {
         // assert
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
 
@@ -130,7 +130,7 @@ public class transactionTests {
     @Test
     void updateSuccessChangeAmountTransaction() {
         // arrange
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
         user.setId("babalu");
         user.setBalance(1000);
 
@@ -159,7 +159,7 @@ public class transactionTests {
 
     @Test
     void updateNotFoundDeleteTransaction() {
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
 
         ErrorException exception = assertThrows(ErrorException.class, () -> service.deleteTransaction(user, "babalu"));
 

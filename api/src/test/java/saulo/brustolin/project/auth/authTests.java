@@ -51,7 +51,7 @@ public class authTests {
 
     @Test
     void registerSuccessTest() {
-        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "01874954089", "senha123$", "senha123$");
+        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$", "senha123$");
 
         Mockito.when(repository.existsByEmail(dto.email())).thenReturn(false);
         Mockito.when(passwordEncoder.encode(dto.password())).thenReturn("crypto-password");
@@ -78,7 +78,7 @@ public class authTests {
     void loginSuccessTest() {
         // assert
         AuthenticationDTO dto = new AuthenticationDTO("pedro@gmail.com", "senha123$");
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123$");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
 
         Mockito.when(repository.findByEmailAndIsActiveTrue(dto.email())).thenReturn(Optional.of(user));
         Mockito.when(passwordEncoder.matches(dto.password(), user.getPassword())).thenReturn(true);
@@ -119,7 +119,7 @@ public class authTests {
     @Test
     void loginInvalidPassword() {
         AuthenticationDTO dto = new AuthenticationDTO("pedro@gmail.com", "senha123$");
-        User user = new User("Pedro", "pedro@gmail.com", "01874954089", "senha123#");
+        User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123#");
 
         Mockito.when(repository.findByEmailAndIsActiveTrue(dto.email())).thenReturn(Optional.of(user));
         Mockito.when(passwordEncoder.matches(dto.password(), user.getPassword())).thenReturn(false);
@@ -132,7 +132,7 @@ public class authTests {
     @Test
     void registerUserExists() {
         // assert
-        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "01874954089", "senha123$", "senha123$");
+        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$", "senha123$");
 
         Mockito.when(repository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -146,7 +146,7 @@ public class authTests {
     @Test
     void registerDiffPassword() {
         // assert
-        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "01874954089", "senha", "senha123$");
+        RegisterDTO dto = new RegisterDTO("Pedro", "pedro@gmail.com", "912.287.480-12", "senha", "senha123$");
 
         Mockito.when(repository.existsByEmail(dto.email())).thenReturn(false);
 
