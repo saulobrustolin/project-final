@@ -44,6 +44,8 @@ services:
       dockerfile: frontend/Dockerfile
     ports:
       - "80:3000"
+    profiles:
+      - production
     env_file: frontend/.env
     depends_on:
       - api
