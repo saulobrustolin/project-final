@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +21,7 @@ import saulo.brustolin.shared.dtos.VerificationCodeEvent;
 @AllArgsConstructor
 public class VerificationCodeNotification {
 
-    private final Resend resend;
+    private final ResendConfig resendConfig;
     private final TemplateEngine templateEngine;
     
     @RabbitListener(bindings = @QueueBinding(
@@ -40,14 +39,14 @@ public class VerificationCodeNotification {
         String htmlContent = templateEngine.process("verification-code", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("código de verificação. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("código de verificação. <%s>", resendConfig.getEmailFrom()))
             .to(message.email())
             .subject("código de confirmação.")
             .html(htmlContent)
             .build();
 
         try {
-            resend.emails().send(params);
+            resendConfig.resendClient().emails().send(params);
         } catch (Exception e) {
             e.printStackTrace();
         }

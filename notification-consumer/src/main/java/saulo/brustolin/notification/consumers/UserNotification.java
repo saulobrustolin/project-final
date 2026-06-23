@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +21,7 @@ import saulo.brustolin.shared.dtos.VerificationCodeEvent;
 @AllArgsConstructor
 public class UserNotification {
 
-    private final Resend resend;
+    private final ResendConfig resendConfig;
     private final TemplateEngine templateEngine;
     
     @RabbitListener(bindings = @QueueBinding(
@@ -39,14 +38,14 @@ public class UserNotification {
         String htmlContent = templateEngine.process("user-updated", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("usuário atualizado. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("usuário atualizado. <%s>", resendConfig.getEmailFrom()))
             .to(message.email())
             .subject("usuário atualizado.")
             .html(htmlContent)
             .build();
 
         try {
-            resend.emails().send(params);
+            resendConfig.resendClient().emails().send(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
