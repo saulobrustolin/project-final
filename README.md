@@ -21,7 +21,7 @@ git clone --recurse-submodules https://github.com/saulobrustolin/project-final
     * Todos os dados utilizados neste projeto são valores fictícios, nenhum dados é verdadeiro, seja CPF ou e-mail.
 4. Para rodar o projeto basta executar o seguinte comando na raiz do projeto:
 ```bash
-docker compose --profile production up -d --build
+docker compose --profile tests up -d --build
 ```
 5. Após executado, a interface estará disposta na rota padrão `http://localhost` (caso não tenha alterado no `docker-compose.yaml`);
 
