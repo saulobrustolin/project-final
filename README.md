@@ -1,7 +1,7 @@
 
 # 0. Projeto
 A ideia principal do projeto foi desenvolver uma aplicação simples para controle e metas financeiras. A dor surgiu do mercado de aplicativos deste nicho, onde a maioria das funcionalidades são pagas ou repletas de anúncios de recompensa (ainda acredito ser a melhor opção, em comparação a um plano mensal/anual). Com isso, desenvolvi esse app que faz o básico, mas bem feito.
-    * Tecnologias utilizadas: **Spring Boot + Java 21 + MongoDB + React + TypeScript + Playwright + Docker + Kafka**.
+    * Tecnologias utilizadas: **Spring Boot + Java 21 + MongoDB + React + TypeScript + Playwright + Docker + RabbitMQ**.
 
 # 1. Instalação
 * Para executar o projeto é necessário ter instalado o **Node.js, OpenJDK c/Java 21 e Docker**. Além disso, será necessário ter uma conta no Resend (uma plataforma de envio de e-mails) para criar a sua KEY - fique tranquilo que é 100% free para até 3k de envios por mês e iremos utilizar bem menos do que isso.
