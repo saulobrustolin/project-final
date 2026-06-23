@@ -10,11 +10,22 @@ RUN mvn clean install -f shared/pom.xml -DskipTests
 COPY api/ ./api/
 RUN mvn clean package -f api/pom.xml -DskipTests
 
+COPY notification-consumer/ ./notification-consumer/
+RUN mvn clean package -f notification-consumer/pom.xml -DskipTests
+
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
+
 RUN useradd -m spring
+
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh && chown spring:spring entrypoint.sh
+
+COPY --from=build /app/api/target/*.jar api.jar
+COPY --from=build /app/notification-consumer/target/*.jar consumer.jar
+
 USER spring
 
-COPY --from=build /app/api/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["./entrypoint.sh"]
