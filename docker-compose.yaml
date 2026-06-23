@@ -6,6 +6,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    profiles:
+      - tests
     env_file: .env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -16,6 +18,8 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    profiles:
+      - tests
     volumes:
       - mongo_data:/data/db
       - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
@@ -26,6 +30,9 @@ services:
       dockerfile: api/Dockerfile
     ports:
       - "8080:8080"
+    profiles:
+      - production
+      - tests
     env_file: .env
     depends_on:
       - mongodb
@@ -37,6 +44,9 @@ services:
       context: .
       dockerfile: notification-consumer/Dockerfile
     env_file: .env
+    profiles:
+      - production
+      - tests
     depends_on:
       - rabbitmq
 
