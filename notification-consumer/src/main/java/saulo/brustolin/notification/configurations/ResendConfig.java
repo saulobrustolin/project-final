@@ -6,20 +6,21 @@ import org.springframework.context.annotation.Configuration;
 
 import com.resend.Resend;
 
-import lombok.AllArgsConstructor;
-
 @Configuration
-@AllArgsConstructor
 public class ResendConfig {
 
     @Value("${resend.from}")
-    public static String EMAIL_FROM;
+    private String EMAIL_FROM;
     
     @Value("${resend.api.key}")
-    public String apiKey;
+    private String apiKey;
 
     @Bean
     public Resend resendClient() {
         return new Resend(apiKey);
+    }
+
+    public String getEmailFrom() {
+        return EMAIL_FROM;
     }
 }

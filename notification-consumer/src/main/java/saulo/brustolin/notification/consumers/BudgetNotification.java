@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
 
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ import saulo.brustolin.shared.dtos.BudgetEvent;
 @AllArgsConstructor
 public class BudgetNotification {
 
-    private final Resend resend;
+    private final ResendConfig resendConfig;
     private final TemplateEngine templateEngine;
     private final Locale locale = Locale.of("pt", "BR");;
     private final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
@@ -50,14 +49,14 @@ public class BudgetNotification {
         }
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("%s <%s>", (budgetCompleted ? "parabéns, você atingiu sua meta." : "nova atualização na sua meta, você está quase lá"), ResendConfig.EMAIL_FROM))
+            .from(String.format("%s <%s>", (budgetCompleted ? "parabéns, você atingiu sua meta." : "nova atualização na sua meta, você está quase lá"), resendConfig.getEmailFrom()))
             .to(message.email())
             .subject("atualização nas suas metas.")
             .html(htmlContent)
             .build();
 
         try {
-            resend.emails().send(params);
+            resendConfig.resendClient().emails().send(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,14 +80,14 @@ public class BudgetNotification {
         String htmlContent = templateEngine.process("budget-created", context);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-            .from(String.format("um novo objetivo foi criado. <%s>", ResendConfig.EMAIL_FROM))
+            .from(String.format("um novo objetivo foi criado. <%s>", resendConfig.getEmailFrom()))
             .to(message.email())
             .subject("parabéns, você está a um passo de uma nova conquista.")
             .html(htmlContent)
             .build();
 
         try {
-            resend.emails().send(params);
+            resendConfig.resendClient().emails().send(params);
         } catch (Exception e) {
             e.printStackTrace();
         }
