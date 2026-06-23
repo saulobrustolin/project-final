@@ -54,6 +54,7 @@ services:
       - "80:3000"
     profiles:
       - production
+      - tests
     env_file: frontend/.env
     depends_on:
       - api
