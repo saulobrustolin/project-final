@@ -34,9 +34,6 @@ services:
       - production
       - tests
     env_file: .env
-    depends_on:
-      - mongodb
-      - rabbitmq
 
   notification-consumer:
     container_name: notification-consumer
@@ -47,8 +44,6 @@ services:
     profiles:
       - production
       - tests
-    depends_on:
-      - rabbitmq
 
   frontend:
     container_name: frontend
