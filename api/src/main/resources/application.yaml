@@ -27,7 +27,8 @@ spring:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
     virtual-host: ${RABBITMQ_VIRTUAL_HOST}
-    ssl: ${RABBITMQ_SSL}
+    ssl:
+      enabled: ${RABBITMQ_SSL}
     listener:
       simple:
         concurrency: 3
