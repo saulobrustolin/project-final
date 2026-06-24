@@ -18,6 +18,7 @@ api:
     token:
       secret: ${JWT_SECRET}
       expired: ${JWT_EXPIRED}
+  cors: ${ORIGINS_CORS}
 
 ---
 spring:
