@@ -1,8 +1,9 @@
 package saulo.brustolin.project.services;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -152,13 +153,12 @@ public class TransactionService {
                         user.getName()));
     }
 
-    public List<TransactionResponseDTO> getPeriod(User user, LocalDate from, LocalDate to) {
-        if (to == null) {
-            to = from;
-        }
-        
-        Instant start = from.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Instant end = to.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant();
+    public List<TransactionResponseDTO> getPeriod(User user, Integer month, Integer year) { 
+        ZoneId zoneId = ZoneId.systemDefault();       
+        YearMonth yearMonth = YearMonth.of(year, month);
+
+        Instant start = yearMonth.atDay(1).atStartOfDay(zoneId).toInstant();
+        Instant end = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(zoneId).toInstant();
 
         List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateBetween(user.getId(), start, end);
 

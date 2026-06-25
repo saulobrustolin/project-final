@@ -47,10 +47,10 @@ public class TransactionController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<Iterable<TransactionResponseDTO>> getTransactions(
         @AuthenticationPrincipal User user,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to
+        @RequestParam(required = true) Integer month,
+        @RequestParam(required = true) Integer year
     ) {
-        Iterable<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
+        Iterable<TransactionResponseDTO> transactions = transactionService.getPeriod(user, month, year);
 
         return ResponseEntity.ok(transactions);
     }

@@ -208,7 +208,7 @@ public class TransactionIntegrationTests {
         transactionRepository.save(new Transaction("tx 3", 7000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date3));
 
         List<TransactionResponseDTO> result = transactionService.getPeriod(
-                user, LocalDate.of(2026, 6, 1), LocalDate.of(2026, 6, 30)
+                user, 6, 2026
         );
 
         assertThat(result).hasSize(2);

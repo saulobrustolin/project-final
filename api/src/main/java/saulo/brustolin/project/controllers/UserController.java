@@ -30,10 +30,10 @@ public class UserController {
     @GetMapping(path = "/resume", produces = "application/json")
     public ResumeUserDTO getResume(
         @AuthenticationPrincipal User user,
-        @RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to
+        @RequestParam(required = true) Integer month,
+        @RequestParam(required = true) Integer year
     ) {
-        return userService.getResume(user, from, to);
+        return userService.getResume(user, month, year);
     }
 
     @GetMapping(path = "/me", produces = "application/json")

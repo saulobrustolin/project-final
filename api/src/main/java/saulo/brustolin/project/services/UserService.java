@@ -36,8 +36,8 @@ public class UserService {
     private final VerificationCodeService verificationCodeService;
     private final PasswordEncoder passwordEncoder;
 
-    public ResumeUserDTO getResume(User user, LocalDate from, LocalDate to) {
-        List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, from, to);
+    public ResumeUserDTO getResume(User user, Integer month, Integer year) {
+        List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, month, year);
         
         Integer credit = transactions.stream()
             .filter(t -> t.type() == TransactionType.EXPENSE)
