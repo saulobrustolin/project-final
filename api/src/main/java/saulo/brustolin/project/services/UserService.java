@@ -54,7 +54,6 @@ public class UserService {
 
         return new ResumeUserDTO(
             current_balance,
-            user.getBalance(),
             net_balance,
             credit,
             debit,

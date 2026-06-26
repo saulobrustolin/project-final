@@ -171,7 +171,7 @@ public class TransactionService {
 
         Instant end = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(zoneId).toInstant();
 
-        List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateLt(user.getId(), end);
+        List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateLessThan(user.getId(), end);
 
         return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
     }
@@ -189,7 +189,7 @@ public class TransactionService {
                     transaction.getType(),
                     transaction.getCollection(),
                     baseDate.plusMonths(i - 1).toInstant());
-            System.out.println(t);
+
             transactions.add(t);
         }
 

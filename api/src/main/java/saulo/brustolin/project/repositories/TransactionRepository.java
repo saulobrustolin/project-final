@@ -11,5 +11,5 @@ import saulo.brustolin.project.entities.Transaction;
 public interface TransactionRepository extends MongoRepository<Transaction, String> {
     Optional<Transaction> findByIdAndUserId(String id, String userId);
     List<Transaction> findAllByUserIdAndDateBetween(String userId, Instant start, Instant end);
-    List<Transaction> findAllByUserIdAndDateLt(String userId, Instant end);
+    List<Transaction> findAllByUserIdAndDateLessThan(String userId, Instant end);
 }

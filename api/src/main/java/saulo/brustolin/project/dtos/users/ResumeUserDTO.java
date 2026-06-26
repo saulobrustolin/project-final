@@ -6,7 +6,6 @@ import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 
 public record ResumeUserDTO(
     Integer current_balance,
-    Integer balance,
     Integer net_balance,
     Integer credit,
     Integer debit,
