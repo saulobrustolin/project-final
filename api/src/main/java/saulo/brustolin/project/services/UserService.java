@@ -1,6 +1,5 @@
 package saulo.brustolin.project.services;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -38,6 +37,7 @@ public class UserService {
 
     public ResumeUserDTO getResume(User user, Integer month, Integer year) {
         List<TransactionResponseDTO> transactions = transactionService.getPeriod(user, month, year);
+        List<TransactionResponseDTO> allTransactions = transactionService.allTransactionsAt(user, month, year);
         
         Integer credit = transactions.stream()
             .filter(t -> t.type() == TransactionType.EXPENSE)
@@ -49,9 +49,11 @@ public class UserService {
             .mapToInt(t -> t.amount())
             .sum();
 
-        Integer net_balance = debit - credit;
+        Integer net_balance = transactionService.calculateBalance(transactions);
+        Integer current_balance = transactionService.calculateBalance(allTransactions);
 
         return new ResumeUserDTO(
+            current_balance,
             user.getBalance(),
             net_balance,
             credit,

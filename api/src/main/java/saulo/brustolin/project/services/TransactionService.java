@@ -165,6 +165,17 @@ public class TransactionService {
         return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
     }
 
+    public List<TransactionResponseDTO> allTransactionsAt(User user, Integer month, Integer year) { 
+        ZoneId zoneId = ZoneId.systemDefault();       
+        YearMonth yearMonth = YearMonth.of(year, month);
+
+        Instant end = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(zoneId).toInstant();
+
+        List<Transaction> transactions = transactionRepository.findAllByUserIdAndDateLt(user.getId(), end);
+
+        return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
+    }
+
     public void createSubdivisionTransactions(User user, Transaction transaction, Integer subdivision) {
         List<Transaction> transactions = new ArrayList<Transaction>();
         Integer subdivisionValue = transaction.getAmount() / subdivision;
@@ -186,5 +197,19 @@ public class TransactionService {
             deleteTransaction(user, transaction.getId());
 
         transactionRepository.saveAll(transactions);
+    }
+
+    public Integer calculateBalance(List<TransactionResponseDTO> transactions) {
+        Integer credit = transactions.stream()
+            .filter(t -> t.type() == TransactionType.EXPENSE)
+            .mapToInt(t -> t.amount())
+            .sum();
+        
+        Integer debit = transactions.stream()
+            .filter(t -> t.type() == TransactionType.INCOME)
+            .mapToInt(t -> t.amount())
+            .sum();
+
+        return debit - credit;
     }
 }
