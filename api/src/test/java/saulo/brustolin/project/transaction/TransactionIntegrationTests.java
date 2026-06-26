@@ -67,6 +67,7 @@ public class TransactionIntegrationTests {
                 "salário",
                 500000,
                 null,
+                null,
                 new CollectionType("Trabalho", "BriefcaseBusiness"),
                 TransactionType.INCOME,
                 Instant.now()
@@ -95,6 +96,7 @@ public class TransactionIntegrationTests {
                 "seguro anual",
                 120000,
                 3,
+                null,
                 new CollectionType("Casa", "House"),
                 TransactionType.EXPENSE,
                 Instant.now()

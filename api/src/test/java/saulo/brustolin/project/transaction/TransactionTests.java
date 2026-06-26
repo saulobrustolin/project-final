@@ -63,6 +63,7 @@ public class TransactionTests {
             "shopping",
             900,
             null,
+            null,
             new CollectionType("Shopping", "cart"), 
             TransactionType.INCOME, 
             Instant.now()

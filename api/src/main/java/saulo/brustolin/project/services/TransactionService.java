@@ -51,30 +51,36 @@ public class TransactionService {
             @CacheEvict(value = "transactions", key = "#user.id")
     })
     public void createTransaction(User user, CreateTransactionDTO dto) {
-        Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(),
-                dto.collection(), dto.date());
+        for (Integer i = 1; i <= dto.recurrence(); i++) {
+            ZonedDateTime zoned = dto.date().atZone(ZoneId.of("UTC"));
 
-        try {
-            user.setBalance(
-                    user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
-                            : -transaction.getAmount()));
-            userRepository.save(user);
+            Instant date = zoned.plusMonths(i - 1).toInstant();
 
-            if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
-                createSubdivisionTransactions(user, transaction, dto.subdivision());
-                return;
-            };
+            Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(),
+                    dto.collection(), date);
 
-            transactionRepository.save(transaction);
-        } finally {
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.EXCHANGE_NAME,
-                    "transaction.created",
-                    new TransactionEvent(transaction.getId(), transaction.getDescription(), transaction.getAmount(),
-                            transaction.getType(), transaction.getCollection(), transaction.getDate(), user.getEmail(),
-                            user.getName()));
+            try {
+                user.setBalance(
+                        user.getBalance() + (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
+                                : -transaction.getAmount()));
+                userRepository.save(user);
+
+                if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
+                    createSubdivisionTransactions(user, transaction, dto.subdivision());
+                    return;
+                }
+
+                transactionRepository.save(transaction);
+            } finally {
+                rabbitTemplate.convertAndSend(
+                        RabbitMQConfig.EXCHANGE_NAME,
+                        "transaction.created",
+                        new TransactionEvent(transaction.getId(), transaction.getDescription(), transaction.getAmount(),
+                                transaction.getType(), transaction.getCollection(), transaction.getDate(),
+                                user.getEmail(),
+                                user.getName()));
+            }
         }
-
     }
 
     @Cacheable(value = "transactions", key = "#transactionId")
@@ -119,7 +125,8 @@ public class TransactionService {
         if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
             createSubdivisionTransactions(user, transaction, dto.subdivision());
             return;
-        };
+        }
+        ;
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE_NAME,
@@ -153,8 +160,8 @@ public class TransactionService {
                         user.getName()));
     }
 
-    public List<TransactionResponseDTO> getPeriod(User user, Integer month, Integer year) { 
-        ZoneId zoneId = ZoneId.systemDefault();       
+    public List<TransactionResponseDTO> getPeriod(User user, Integer month, Integer year) {
+        ZoneId zoneId = ZoneId.systemDefault();
         YearMonth yearMonth = YearMonth.of(year, month);
 
         Instant start = yearMonth.atDay(1).atStartOfDay(zoneId).toInstant();
@@ -165,8 +172,8 @@ public class TransactionService {
         return transactions.stream().map(TransactionResponseDTO::fromEntity).toList();
     }
 
-    public List<TransactionResponseDTO> allTransactionsAt(User user, Integer month, Integer year) { 
-        ZoneId zoneId = ZoneId.systemDefault();       
+    public List<TransactionResponseDTO> allTransactionsAt(User user, Integer month, Integer year) {
+        ZoneId zoneId = ZoneId.systemDefault();
         YearMonth yearMonth = YearMonth.of(year, month);
 
         Instant end = LocalDateTime.of(yearMonth.atEndOfMonth(), LocalTime.MAX).atZone(zoneId).toInstant();
@@ -201,14 +208,14 @@ public class TransactionService {
 
     public Integer calculateBalance(List<TransactionResponseDTO> transactions) {
         Integer credit = transactions.stream()
-            .filter(t -> t.type() == TransactionType.EXPENSE)
-            .mapToInt(t -> t.amount())
-            .sum();
-        
+                .filter(t -> t.type() == TransactionType.EXPENSE)
+                .mapToInt(t -> t.amount())
+                .sum();
+
         Integer debit = transactions.stream()
-            .filter(t -> t.type() == TransactionType.INCOME)
-            .mapToInt(t -> t.amount())
-            .sum();
+                .filter(t -> t.type() == TransactionType.INCOME)
+                .mapToInt(t -> t.amount())
+                .sum();
 
         return debit - credit;
     }
