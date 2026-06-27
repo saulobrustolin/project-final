@@ -13,7 +13,8 @@ public record TransactionResponseDTO(
     Integer amount,
     TransactionType type,
     CollectionType collection,
-    Instant date
+    Instant date,
+    String groupId
 ) {
     public final static TransactionResponseDTO fromEntity(Transaction transaction) {
         return new TransactionResponseDTO(
@@ -22,7 +23,8 @@ public record TransactionResponseDTO(
             transaction.getAmount(),
             transaction.getType(),
             transaction.getCollection(),
-            transaction.getDate()
+            transaction.getDate(),
+            transaction.getGroupId()
         );
     }
 }
