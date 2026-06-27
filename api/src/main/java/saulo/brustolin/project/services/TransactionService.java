@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.configurations.RabbitMQConfig;
 import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
+import saulo.brustolin.project.dtos.transactions.DeletionType;
 import saulo.brustolin.shared.dtos.*;
 import saulo.brustolin.shared.entities.*;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
@@ -51,13 +53,16 @@ public class TransactionService {
             @CacheEvict(value = "transactions", key = "#user.id")
     })
     public void createTransaction(User user, CreateTransactionDTO dto) {
+        boolean isSingle = dto.recurrence() == null && dto.subdivision() == null;
+        String groupId = isSingle ? null : UUID.randomUUID().toString();
         for (Integer i = 1; i <= dto.recurrence(); i++) {
             ZonedDateTime zoned = dto.date().atZone(ZoneId.of("UTC"));
 
             Instant date = zoned.plusMonths(i - 1).toInstant();
 
+
             Transaction transaction = new Transaction(dto.description(), dto.amount(), user.getId(), dto.type(),
-                    dto.collection(), date);
+                    dto.collection(), date, groupId);
 
             try {
                 user.setBalance(
@@ -125,8 +130,7 @@ public class TransactionService {
         if (dto.subdivision() != null && Optional.of(dto.subdivision()).isPresent()) {
             createSubdivisionTransactions(user, transaction, dto.subdivision());
             return;
-        }
-        ;
+        };
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE_NAME,
@@ -139,7 +143,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public void deleteTransaction(User user, String transactionId) {
+    public void deleteTransaction(User user, String transactionId, DeletionType type) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, user.getId())
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
@@ -147,7 +151,14 @@ public class TransactionService {
             throw new ErrorException(HttpStatus.UNAUTHORIZED, "Essa transação é privada");
         }
 
-        transactionRepository.delete(transaction);
+        if (type == DeletionType.ALL) {
+            transactionRepository.deleteAllByGroupId(transaction.getGroupId());
+        } else if (type == DeletionType.NEXT) {
+            transactionRepository.deleteAllByGroupIdAndDateGreaterThan(transaction.getGroupId(), transaction.getDate());
+        } else {
+            transactionRepository.delete(transaction);
+        }
+
         user.setBalance(user.getBalance() - (transaction.getType() == TransactionType.INCOME ? transaction.getAmount()
                 : -transaction.getAmount()));
         userRepository.save(user);
@@ -187,6 +198,7 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<Transaction>();
         Integer subdivisionValue = transaction.getAmount() / subdivision;
 
+        String groupId = UUID.randomUUID().toString();
         for (Integer i = 1; i <= subdivision; i++) {
             ZonedDateTime baseDate = transaction.getDate().atZone(ZoneId.of("UTC"));
             Transaction t = new Transaction(
@@ -195,13 +207,14 @@ public class TransactionService {
                     user.getId(),
                     transaction.getType(),
                     transaction.getCollection(),
-                    baseDate.plusMonths(i - 1).toInstant());
+                    baseDate.plusMonths(i - 1).toInstant(),
+                    groupId);
 
             transactions.add(t);
         }
 
         if (transaction.getId() != null && Optional.of(transaction.getId()).isPresent())
-            deleteTransaction(user, transaction.getId());
+            deleteTransaction(user, transaction.getId(), null);
 
         transactionRepository.saveAll(transactions);
     }

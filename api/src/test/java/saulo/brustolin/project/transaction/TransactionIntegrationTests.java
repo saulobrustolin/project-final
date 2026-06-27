@@ -123,7 +123,8 @@ public class TransactionIntegrationTests {
                 user.getId(),
                 TransactionType.EXPENSE,
                 new CollectionType("Mercado", "ShoppingBasket"),
-                Instant.now()
+                Instant.now(),
+                null
         ));
 
         TransactionResponseDTO response = transactionService.getTransaction(user, tx.getId());
@@ -140,7 +141,8 @@ public class TransactionIntegrationTests {
                 alternativeUser.getId(),
                 TransactionType.EXPENSE,
                 new CollectionType("Água", "Droplet"),
-                Instant.now()
+                Instant.now(),
+                null
         ));
 
         assertThatThrownBy(() -> transactionService.getTransaction(user, tx.getId()))
@@ -156,7 +158,8 @@ public class TransactionIntegrationTests {
                 user.getId(),
                 TransactionType.EXPENSE,
                 new CollectionType("Luz", "Zap"),
-                Instant.now()
+                Instant.now(),
+                null
         ));
         UpdateTransactionDTO dto = new UpdateTransactionDTO(
                 "luz",
@@ -186,10 +189,11 @@ public class TransactionIntegrationTests {
                 user.getId(),
                 TransactionType.INCOME,
                 new CollectionType("Trabalho", "BriefcaseBusiness"),
-                Instant.now()
+                Instant.now(),
+                null
         ));
         
-        transactionService.deleteTransaction(user, tx.getId());
+        transactionService.deleteTransaction(user, tx.getId(), null);
 
         assertThat(transactionRepository.findById(tx.getId())).isEmpty();
 
@@ -205,9 +209,9 @@ public class TransactionIntegrationTests {
         Instant date2 = Instant.parse("2026-06-15T10:00:00Z");
         Instant date3 = Instant.parse("2026-07-01T10:00:00Z");
 
-        transactionRepository.save(new Transaction("tx 1", 5000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date1));
-        transactionRepository.save(new Transaction("tx 2", 6000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date2));
-        transactionRepository.save(new Transaction("tx 3", 7000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date3));
+        transactionRepository.save(new Transaction("tx 1", 5000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date1, null));
+        transactionRepository.save(new Transaction("tx 2", 6000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date2, null));
+        transactionRepository.save(new Transaction("tx 3", 7000, user.getId(), TransactionType.INCOME, new CollectionType("Trabalho", "BriefcaseBusiness"), date3, null));
 
         List<TransactionResponseDTO> result = transactionService.getPeriod(
                 user, 6, 2026

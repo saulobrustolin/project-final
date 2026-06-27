@@ -94,7 +94,8 @@ public class TransactionTests {
             "babalu", 
             TransactionType.EXPENSE, 
             new CollectionType("Food", "food"), 
-            Instant.now()
+            Instant.now(),
+            null
         );
         transaction.setId("pizza");
 
@@ -133,7 +134,8 @@ public class TransactionTests {
             "babalu", 
             TransactionType.EXPENSE, 
             new CollectionType("Food", "food"), 
-            Instant.now()
+            Instant.now(),
+            null
         );
         transaction.setId("pizza");
 
@@ -152,7 +154,7 @@ public class TransactionTests {
     void update_NotFoundDeleteTransaction() {
         User user = new User("Pedro", "pedro@gmail.com", "912.287.480-12", "senha123$");
 
-        ErrorException exception = assertThrows(ErrorException.class, () -> service.deleteTransaction(user, "babalu"));
+        ErrorException exception = assertThrows(ErrorException.class, () -> service.deleteTransaction(user, "babalu", null));
 
         assertEquals(exception.getStatus(), HttpStatus.NOT_FOUND);
         assertEquals(exception.getMessage(), "Transação não encontrada");

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import saulo.brustolin.project.dtos.transactions.CreateTransactionDTO;
+import saulo.brustolin.project.dtos.transactions.DeletionType;
 import saulo.brustolin.project.dtos.transactions.TransactionResponseDTO;
 import saulo.brustolin.project.dtos.transactions.UpdateTransactionDTO;
 import saulo.brustolin.project.entities.User;
@@ -64,8 +65,12 @@ public class TransactionController {
     }
 
     @DeleteMapping(path = "/{transactionId}", produces = "application/json")
-    public ResponseEntity<Void> deleteTransaction(@AuthenticationPrincipal User user, @PathVariable String transactionId) {
-        transactionService.deleteTransaction(user, transactionId);
+    public ResponseEntity<Void> deleteTransaction(
+        @AuthenticationPrincipal User user,
+        @PathVariable String transactionId,
+        @RequestParam(required = false) DeletionType type
+    ) {
+        transactionService.deleteTransaction(user, transactionId, type);
         
         return ResponseEntity.ok().build();
     }

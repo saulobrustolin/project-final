@@ -27,6 +27,7 @@ public class Transaction {
     @NonNull private TransactionType type;
     @NonNull private CollectionType collection;
     @NonNull private Instant date;
+    @NonNull private String groupId;
 
     @CreatedDate
     private Instant createdAt;
