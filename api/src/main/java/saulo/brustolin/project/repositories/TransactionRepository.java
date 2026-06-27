@@ -13,5 +13,5 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
     List<Transaction> findAllByUserIdAndDateBetween(String userId, Instant start, Instant end);
     List<Transaction> findAllByUserIdAndDateLessThan(String userId, Instant end);
     void deleteAllByGroupId(String groupId);
-    void deleteAllByGroupIdAndDateGreaterThan(String groupId, Instant date);
+    void deleteAllByGroupIdAndDateGreaterThanEqual(String groupId, Instant date);
 }

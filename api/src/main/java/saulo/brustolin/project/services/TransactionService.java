@@ -148,13 +148,13 @@ public class TransactionService {
                 .orElseThrow(() -> new ErrorException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
 
         if (!transaction.getUserId().equals(user.getId())) {
-            throw new ErrorException(HttpStatus.UNAUTHORIZED, "Essa transação é privada");
+            throw new ErrorException(HttpStatus.UNAUTHORIZED, "Transação não encontrada");
         }
 
         if (type == DeletionType.ALL) {
             transactionRepository.deleteAllByGroupId(transaction.getGroupId());
         } else if (type == DeletionType.NEXT) {
-            transactionRepository.deleteAllByGroupIdAndDateGreaterThan(transaction.getGroupId(), transaction.getDate());
+            transactionRepository.deleteAllByGroupIdAndDateGreaterThanEqual(transaction.getGroupId(), transaction.getDate());
         } else {
             transactionRepository.delete(transaction);
         }
