@@ -99,7 +99,8 @@ public class TransactionService {
                 transaction.getAmount(),
                 transaction.getType(),
                 transaction.getCollection(),
-                transaction.getDate());
+                transaction.getDate(),
+                transaction.getGroupId());
     }
 
     @Transactional
