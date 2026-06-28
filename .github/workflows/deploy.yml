@@ -1,0 +1,24 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: debian-latest
+
+    steps:
+      - name: submit cloud
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CAIXINHA_HOST }}
+          username: ${{ secrets.CAIXINHA_USER }}
+          key: ${{ secrets.CAIXINHA_SSH_KEY }}
+          port: 22
+          script: |
+            cd caixinha
+            sudo docker compose --profile production down -v
+            git pull origin master
+            sudo docker compose --profile production up -d --build
