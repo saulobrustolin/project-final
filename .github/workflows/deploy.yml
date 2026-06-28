@@ -20,5 +20,5 @@ jobs:
           script: |
             cd caixinha
             sudo docker compose --profile production down -v
-            git pull origin master
+            git pull origin master --recurse-submodules
             sudo docker compose --profile production up -d --build
